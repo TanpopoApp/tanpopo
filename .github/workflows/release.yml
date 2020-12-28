@@ -1,0 +1,173 @@
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]*'
+
+name: Create release and upload binaries
+
+jobs:
+  build-linux:
+    name: build-linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Build
+        run: |
+          yarn electron:build:linux
+          cd dist_electron
+          tar -czvf tanpopo-linux-amd64.tar.gz tanpopo-*.AppImage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: latest-linux
+          path: dist_electron/tanpopo-linux-amd64.tar.gz
+
+  build-windows:
+    name: build-windows
+    runs-on: windows-latest
+    steps:
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Build
+        run: |
+          yarn electron:build:win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: latest-windows
+          path: dist_electron/tanpopo*.exe
+
+  build-macos:
+    name: build-macos
+    runs-on: macOS-latest
+    steps:
+      - name: Set up Node.js 12.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Build
+        run: |
+          yarn electron:build:mac
+          cd dist_electron
+          zip tanpopo-mac-dmg.zip tanpopo-*.dmg
+          mv tanpopo-*-mac.zip tanpopo-mac.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: latest-macos
+          path: |
+            dist_electron/tanpopo-mac-dmg.zip
+            dist_electron/tanpopo-mac.zip
+
+  release:
+    name: Create and upload release
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download linux artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: latest-linux
+
+      - name: Download windows artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: latest-windows
+
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: latest-macos
+
+      - name: Zip windows
+        run: |
+          zip tanpopo-win.zip tanpopo*.exe
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Windows
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tanpopo-win.zip
+          asset_name: tanpopo-win.zip
+          asset_content_type: application/zip
+
+      - name: Upload Linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tanpopo-linux-amd64.tar.gz
+          asset_name: tanpopo-linux-amd64.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload macOS
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tanpopo-mac.zip
+          asset_name: tanpopo-mac.zip
+          asset_content_type: application/zip
+
+      - name: Upload macOS DMG
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tanpopo-mac-dmg.zip
+          asset_name: tanpopo-mac-dmg.zip
+          asset_content_type: application/zip

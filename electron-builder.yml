@@ -1,0 +1,50 @@
+productName: 'tanpopo'
+appId: 'org.tanpopo.client'
+
+# Package electron code into a asar archive. Set to false to debug issues.
+asar: true
+
+# Mac OS configuration
+mac:
+  icon: 'build/icons/icon.icns'
+  extraResources:
+    - from: 'src/helper/darwin'
+      to: 'helper'
+      filter:
+        - '**/*'
+# Config for OSX dmg
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: 'link'
+      path: '/Applications'
+
+# Windows configuration
+win:
+  icon: 'build/icons/icon.ico'
+  target:
+    - 'zip'
+    - 'nsis'
+  extraResources:
+    - from: 'src/helper/win32'
+      to: 'helper'
+      filter:
+        - '**/*'
+# Config for the windows installer
+nsis:
+  oneClick: true
+  perMachine: true
+
+# Linux configuration
+linux:
+  category: Utility
+  extraResources:
+    - from: 'src/helper/linux'
+      to: 'helper'
+      filter:
+        - '**/*'
+  target:
+    - 'AppImage'
