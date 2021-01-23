@@ -1,3 +1,3 @@
 # tanpopo
 
-A cross-platform desktop apps built with Electron.
+A cross-platform desktop app built with Electron.
