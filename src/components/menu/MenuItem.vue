@@ -41,7 +41,7 @@ export default class MenuItem extends Vue {
 }
 .active {
   color: var(--color-main);
-  background-color: var(--color-hover);
+  font-weight: 600;
   &:hover {
     color: var(--color-main);
   }

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16">
+  <defs>
+    <path id="dropdown-a" d="M4.40074118,5.2 L11.5992588,5.2 C12.0967244,5.2 12.5,5.6181543 12.5,6.13397377 C12.5,6.38167901 12.4051008,6.6192389 12.236179,6.79439296 L8.6369202,10.5264454 C8.28515888,10.8911849 7.71484112,10.8911849 7.3630798,10.5264454 L3.76382098,6.79439296 C3.41205967,6.42965351 3.41205967,5.83829403 3.76382098,5.47355458 C3.93274272,5.29840053 4.16184976,5.2 4.40074118,5.2 Z"/>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <mask id="dropdown-b" fill="#fff">
+      <use xlink:href="#dropdown-a"/>
+    </mask>
+    <g fill="currentColor" mask="url(#dropdown-b)">
+      <rect width="16" height="16"/>
+    </g>
+  </g>
+</svg>

@@ -41,8 +41,9 @@ export default class About extends Vue {
   height: 48px;
 }
 .title {
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
 }
 .body {
   display: flex;

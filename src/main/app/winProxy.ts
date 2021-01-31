@@ -1,21 +1,11 @@
 import { app } from 'electron';
-import Store from 'electron-store';
 import path from 'path';
 import execa from 'execa';
 import http from 'http';
 import fs from 'fs-extra';
 import log from 'electron-log';
-import { Dictionary, ISettings } from '@/types';
-import {
-  DEFAULT_PROXY_MODE,
-  DEFAULT_ADDRESS,
-  DEFAULT_SOCKS_PORT,
-  DEFAULT_HTTP_PORT,
-  DEFAULT_PAC_PORT
-} from '@/utils';
 import port from './port';
-
-const store = new Store();
+import store from './store';
 
 class WinProxy {
   proxyPath: string;
@@ -35,13 +25,12 @@ class WinProxy {
   }
 
   private getConfig() {
-    const settings: ISettings = (store.get('settings') as ISettings) || {};
-    const proxyMode = settings.proxyMode || DEFAULT_PROXY_MODE;
-    const address = settings.address || DEFAULT_ADDRESS;
-    const socksPort = settings.socksPort || DEFAULT_SOCKS_PORT.toString();
-    const HTTPPort = settings.HTTPPort || DEFAULT_HTTP_PORT.toString();
-    const PACPort = settings.PACPort || DEFAULT_PAC_PORT.toString();
-    const PACURL = settings.PACURL || '';
+    const proxyMode = store.proxyMode;
+    const address = store.address;
+    const socksPort = store.socksPort.toString();
+    const HTTPPort = store.HTTPPort.toString();
+    const PACPort = store.PACPort.toString();
+    const PACURL = store.PACURL;
     return {
       proxyMode,
       address,
@@ -84,7 +73,7 @@ class WinProxy {
       proxyServer,
       lanIP
     ]);
-    log.info(`proxy all: ${stdout}`);
+    log.info(`win proxy all: ${stdout}`);
   }
 
   private async generatePAC() {
@@ -130,7 +119,7 @@ class WinProxy {
       await this.generatePAC();
     }
     const { stdout } = await execa(this.proxyPath, ['pac', URL]);
-    log.info(`proxy pac: ${stdout}`);
+    log.info(`win proxy pac: ${stdout}`);
   }
 
   async stop() {
@@ -138,7 +127,7 @@ class WinProxy {
       this.PACServe.close();
     }
     const { stdout } = await execa(this.proxyPath, ['set', '1', '-', '-', '-']);
-    log.info(`proxy off: ${stdout}`);
+    log.info(`win proxy off: ${stdout}`);
   }
 }
 

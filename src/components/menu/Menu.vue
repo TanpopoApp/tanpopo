@@ -17,6 +17,6 @@ export default class Menu extends Vue {}
   display: block;
 }
 .menu {
-  display: block;
+  list-style: none;
 }
 </style>

@@ -1,18 +1,15 @@
 import { app } from 'electron';
-import Store from 'electron-store';
 import path from 'path';
 import fs from 'fs-extra';
 import child_process from 'child_process';
 import log from 'electron-log';
 import port from './port';
-import { Dictionary, ISettings } from '@/types';
+import store from './store';
 import {
   DEFAULT_ADDRESS,
   DEFAULT_SOCKS_PORT,
   DEFAULT_HTTP_PORT
-} from '@/utils';
-
-const store = new Store();
+} from '@/utils/const';
 
 class Privoxy {
   privoxyPath: string;
@@ -40,10 +37,9 @@ class Privoxy {
   }
 
   async generateConfig() {
-    const settings: ISettings = (store.get('settings') as ISettings) || {};
-    const address = settings.address || DEFAULT_ADDRESS;
-    const socksPort = Number(settings.socksPort || DEFAULT_SOCKS_PORT);
-    const HTTPPort = Number(settings.HTTPPort || DEFAULT_HTTP_PORT);
+    const address = store.address;
+    const socksPort = store.socksPort;
+    const HTTPPort = store.HTTPPort;
     this.config = Object.assign(this.config, {
       address,
       socksPort,

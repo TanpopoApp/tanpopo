@@ -4,20 +4,24 @@
       <h1 :class="$style.title">{{ $t('views.dashboard.title') }}</h1>
     </div>
     <div :class="$style.body">
-      <div :class="$style.item">
-        <label :class="$style.label">
-          {{ $t('views.dashboard.networkStatus') }}
-        </label>
-        <span :class="$style.value"> {{ networkStatus }} </span>
-      </div>
-      <div :class="$style.item">
-        <label :class="$style.label">
-          {{ $t('views.dashboard.proxySettings') }}
-        </label>
-        <span :class="$style.value">
-          {{ status }}
-        </span>
-        <b-switch v-model="enableStatus" type="is-success"> </b-switch>
+      <div :class="$style.inner">
+        <div :class="$style.item">
+          <label :class="$style.label">
+            {{ $t('views.dashboard.networkStatus') }}
+          </label>
+          <div :class="$style.content">{{ networkStatus }}</div>
+        </div>
+        <div :class="$style.item">
+          <label :class="$style.label">
+            {{ $t('views.dashboard.proxySettings') }}
+          </label>
+          <div :class="$style.content">
+            <TanSwitch v-model="enableStatus" :disabled="!hasSelectedServer" />
+            <span :class="$style.serverName">
+              {{ status }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -26,24 +30,27 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { ipcRenderer } from 'electron';
-import Store from 'electron-store';
 import { IServer } from '@/store/modules/server';
-import { START_TROJAN, STOP_TROJAN, USED_PORT } from '@/utils';
+import { START_TROJAN, STOP_TROJAN } from '@/utils/const';
 import { namespace } from 'vuex-class';
+import { UPDATE_PROXY } from '@/store';
 
 const ServerStore = namespace('server');
-const store = new Store();
+const SettingsStore = namespace('settings');
 
 @Component
 export default class Dashboard extends Vue {
   @ServerStore.State selectedServer!: IServer;
-  enableProxy: boolean = !!store.get('enableProxy') as boolean;
+  @SettingsStore.Getter enableProxy!: boolean;
+  @SettingsStore.Mutation(UPDATE_PROXY) mutationUpdateProxy!: (
+    val: boolean
+  ) => void;
 
   get networkStatus() {
     if (navigator.onLine) {
-      return this.$i18n.t('common.onLine');
+      return this.$i18n.t('common.online');
     } else {
-      return this.$i18n.t('common.offLine');
+      return this.$i18n.t('common.offline');
     }
   }
 
@@ -51,8 +58,7 @@ export default class Dashboard extends Vue {
     return this.enableProxy;
   }
   set enableStatus(val: boolean) {
-    this.enableProxy = val;
-    store.set('enableProxy', val);
+    this.mutationUpdateProxy(val);
   }
 
   get hasSelectedServer() {
@@ -66,35 +72,12 @@ export default class Dashboard extends Vue {
       return this.$i18n.t('views.dashboard.notConnected');
     }
   }
-  mounted() {
-    ipcRenderer.on(USED_PORT, (event, port) => {
-      this.$buefy.toast.open({
-        message: this.$i18n.t('views.dashboard.usedPort', { port }) as string,
-        type: 'is-danger',
-        position: 'is-bottom-right'
-      });
-      this.enableStatus = false;
-    });
-  }
-
-  beforeDestroy() {
-    ipcRenderer.removeAllListeners(USED_PORT);
-  }
 
   @Watch('enableProxy')
   onEnableChanged() {
     if (this.enableProxy) {
       if (this.hasSelectedServer) {
         ipcRenderer.send(START_TROJAN);
-      } else {
-        this.$buefy.toast.open({
-          message: this.$i18n.t('views.dashboard.startTips') as string,
-          type: 'is-danger',
-          position: 'is-bottom-right'
-        });
-        this.$nextTick(() => {
-          this.enableStatus = false;
-        });
       }
     } else {
       ipcRenderer.send(STOP_TROJAN);
@@ -113,25 +96,37 @@ export default class Dashboard extends Vue {
   height: 48px;
 }
 .title {
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
 }
 .body {
-  padding: 16px;
   flex: 1;
   background-color: var(--color-white);
 }
+
+.inner {
+  margin: 16px 24px;
+  width: 640px;
+}
 .item {
   display: flex;
-  margin: 8px 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 0;
 }
 .label {
-  width: 240px;
+  display: block;
 }
-.value {
-  margin: 0 24px;
+.content {
   display: flex;
-  align-items: center;
-  min-width: 200px;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.serverName {
+  max-width: 400px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 </style>

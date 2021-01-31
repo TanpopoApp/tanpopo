@@ -62,7 +62,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: latest-windows
-          path: dist_electron/tanpopo*.exe
+          path: |
+            dist_electron/tanpopo*.exe
+            dist_electron/tanpopo-*-win.zip
 
   build-macos:
     name: build-macos
@@ -117,9 +119,10 @@ jobs:
         with:
           name: latest-macos
 
-      - name: Zip windows
+      - name: Zip and rename windows
         run: |
-          zip tanpopo-win.zip tanpopo*.exe
+          zip tanpopo-win-setup.zip tanpopo*.exe
+          mv tanpopo-*-win.zip tanpopo-win.zip
 
       - name: Create Release
         id: create_release
@@ -131,6 +134,16 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+
+      - name: Upload Windows Setup
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tanpopo-win-setup.zip
+          asset_name: tanpopo-win-setup.zip
+          asset_content_type: application/zip
 
       - name: Upload Windows
         uses: actions/upload-release-asset@v1

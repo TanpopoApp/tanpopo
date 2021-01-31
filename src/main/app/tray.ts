@@ -1,13 +1,12 @@
 import { app, Menu, MenuItemConstructorOptions, Tray } from 'electron';
 import client from '@/main/app';
-import trojan from './trojan';
-import { appWindow } from './window';
-import { trayIcon, isMac, isWin, isLinux } from '@/utils';
-import { ISettings } from '@/types';
-import Store from 'electron-store';
+import { isMac, isWin, isLinux } from '@/utils/platform';
+import { trayIcon } from '@/utils/util';
 import zh from '@/i18n/lang/zh-CN';
 import en from '@/i18n/lang/en';
-const store = new Store();
+import trojan from './trojan';
+import { appWindow } from './window';
+import store from './store';
 
 class TrayMenu {
   tray: Tray | null = null;
@@ -33,15 +32,12 @@ class TrayMenu {
   }
 
   getProxyMode() {
-    const settings = store.get('settings') as ISettings;
-    return settings.proxyMode || 'local';
+    return store.proxyMode;
   }
 
   async setProxyMode(mode: string) {
-    const settings = (store.get('settings') || {}) as ISettings;
-    settings.proxyMode = mode;
-    store.set('settings', settings);
-    if (store.get('enableProxy')) {
+    store.proxyMode = mode;
+    if (store.enableProxy) {
       await trojan.start();
     }
   }
@@ -56,7 +52,7 @@ class TrayMenu {
       { type: 'separator' },
       {
         label: `${this.getLang()!.common.title}${this.getLang()!.common.colon}${
-          store.get('enableProxy')
+          store.enableProxy
             ? this.getLang()!.common.on
             : this.getLang()!.common.off
         }`,
@@ -64,7 +60,7 @@ class TrayMenu {
       },
       {
         label: `${
-          store.get('enableProxy')
+          store.enableProxy
             ? this.getLang()!.common.disable
             : this.getLang()!.common.enable
         } ${this.getLang()!.common.title}`,
@@ -118,7 +114,7 @@ class TrayMenu {
   }
 
   getLang() {
-    const lang = (store.get('language') as string) || 'en';
+    const lang = store.language;
     switch (lang) {
       case 'en':
         return en;
@@ -128,12 +124,12 @@ class TrayMenu {
   }
 
   async toggleTrojan() {
-    if (store.get('enableProxy')) {
+    if (store.enableProxy) {
       await trojan.stop();
-      store.set('enableProxy', false);
+      store.enableProxy = false;
     } else {
       await trojan.start();
-      store.set('enableProxy', true);
+      store.enableProxy = true;
     }
   }
 

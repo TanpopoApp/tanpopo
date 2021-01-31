@@ -1,7 +1,10 @@
-import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators';
-import * as types from '../types';
+import { Module, VuexModule, Mutation } from 'vuex-module-decorators';
+import {
+  ADD_SUBSCRIPTION,
+  UPDATE_SUBSCRIPTION,
+  REMOVE_SUBSCRIPTION
+} from '../mutations.type';
 import { IServer } from './server';
-import { getSubscriptionNodes } from '@/utils';
 import Store from 'electron-store';
 
 export interface ISubscription {
@@ -18,13 +21,6 @@ export interface State {
 
 const store = new Store();
 
-async function fetchNodes(subscription: ISubscription) {
-  const nodes = await getSubscriptionNodes(subscription.URL);
-  if (nodes) {
-    subscription.updated = new Date().toISOString();
-    subscription.nodes = nodes;
-  }
-}
 @Module({
   namespaced: true
 })
@@ -33,25 +29,25 @@ export default class Subscription extends VuexModule implements State {
     (store.get('subscriptions') as Array<ISubscription>) || [];
 
   @Mutation
-  [types.SAVE_SUBSCRIPTION]() {
+  [ADD_SUBSCRIPTION](subscription: ISubscription) {
+    this.subscriptions.push(subscription);
     store.set('subscriptions', this.subscriptions);
   }
 
-  @Action({ commit: types.SAVE_SUBSCRIPTION })
-  async [types.ADD_SUBSCRIPTION](subscription: ISubscription) {
-    this.subscriptions.push(subscription);
-    await fetchNodes(subscription);
-  }
-  @Action({ commit: types.SAVE_SUBSCRIPTION })
-  async [types.UPDATE_SUBSCRIPTION](subscription: ISubscription) {
+  @Mutation
+  [UPDATE_SUBSCRIPTION](subscription: ISubscription) {
     const index = this.subscriptions.findIndex(
       item => item.uuid === subscription.uuid
     );
     this.subscriptions.splice(index, 1, subscription);
-    await fetchNodes(subscription);
+    store.set('subscriptions', this.subscriptions);
   }
+
   @Mutation
-  [types.REMOVE_SUBSCRIPTION](index: number) {
+  [REMOVE_SUBSCRIPTION](subscription: ISubscription) {
+    const index = this.subscriptions.findIndex(
+      item => item.uuid === subscription.uuid
+    );
     this.subscriptions.splice(index, 1);
     store.set('subscriptions', this.subscriptions);
   }

@@ -12,8 +12,8 @@ export default {
     off: 'Off',
     enable: 'Enable',
     disable: 'Disable',
-    onLine: 'OnLine',
-    offLine: 'OffLine',
+    online: 'Online',
+    offline: 'Offline',
     option: 'Option',
     confirmation: 'Confirmation',
     inputError: 'Input error, please check your input.'
@@ -45,7 +45,8 @@ export default {
       editServer: 'Edit Server',
       deleteServer: 'Delete Server',
       emptyServer: 'There is no server info yet, please add one.',
-      sureToDelete: 'Are you sure you want to delete?',
+      sureToDelete: 'Would you like to delete server {name}?',
+      qrCode: 'QR code',
       name: 'Name',
       host: 'Host',
       port: 'Port',
@@ -57,7 +58,15 @@ export default {
       fastOpen: 'Fast Open',
       json: 'JSON',
       portNotMatch:
-        'JSON config local_port not same with config port, please be careful!'
+        'JSON config local_port not same with config port, please be careful!',
+      add: {
+        manual: 'Manual Add',
+        URL: 'Add Trojan URL',
+        json: 'Add JSON'
+      },
+      updateSuccess: 'Server Info updated.',
+      addSuccess: 'Server Info added.',
+      deleteSuccess: '{name} was deleted.'
     },
     subscriptions: {
       title: 'Server Subscriptions',
@@ -65,9 +74,13 @@ export default {
       editSubscription: 'Edit Subscription',
       deleteSubscription: 'Delete Subscription',
       emptySubscription: 'There is no subscription info yet, please add one.',
-      sureToDelete: 'Are you sure you want to delete?',
+      sureToDelete: 'Would you like to delete subscription {name}?',
+      errorURL: 'The Subscription URL can not fetch servers info.',
       URL: 'URL',
-      name: 'Name'
+      name: 'Name',
+      updateSuccess: 'Subscriptions Info updated.',
+      addSuccess: 'Subscriptions Info added.',
+      deleteSuccess: '{name} was deleted.'
     },
     logs: {
       title: 'Logs',
@@ -75,6 +88,7 @@ export default {
     },
     settings: {
       title: 'Settings',
+      resetSettings: 'Reset Settings',
       saveSettings: 'Save Settings',
       saved: 'Settings saved',
       preferredLanguages: 'Preferred Language',
@@ -89,14 +103,21 @@ export default {
       HTTPPort: 'HTTP Port',
       PACPort: 'PAC File Port',
       PACURL: 'PAC URL',
-      sureToChangeLang: 'Change language requires reboot App, are you sure?',
       autoStartup: 'Auto Startup',
-      defaultPACURL: 'Default use gfwlist as pac rule.'
+      defaultPACURL: 'Default use gfwlist as pac rule.',
+      saveSuccess: 'Settings Info saved.',
+      resetSuccess: 'Settings Info reseted.',
+      sureToReset: 'Would you like to reset settings?'
     },
     about: {
       title: 'About',
       version: 'Version'
     }
+  },
+  validation: {
+    required: 'The content should not be blank',
+    type: 'Incorrect format',
+    charCount: 'The content is too long (no more than {count} characters)'
   },
   tray: {
     showPanel: 'Show Panel',

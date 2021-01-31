@@ -1,6 +1,7 @@
 import net from 'net';
+import { USED_PORT } from '@/utils/const';
 import { appWindow } from './window';
-import { USED_PORT } from '@/utils';
+
 export interface PortOptions {
   port: number;
   host: string;

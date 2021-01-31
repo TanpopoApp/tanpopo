@@ -4,120 +4,105 @@
       <h1 :class="$style.title">{{ $t('views.settings.title') }}</h1>
     </div>
     <div :class="$style.body">
-      <div :class="$style.row">
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.preferredLanguages') }}
-          </label>
-          <div :class="$style.value">
-            <b-dropdown v-model="currentLang" aria-role="list">
-              <button
-                class="button"
-                :class="$style.button"
-                type="button"
-                slot="trigger"
-              >
-                <span> {{ currentLangText }}</span>
-                <b-icon icon="menu-down"></b-icon>
-              </button>
-              <b-dropdown-item
-                :key="lang.value"
-                :value="lang.value"
-                aria-role="listitem"
-                v-for="lang in i18nList"
-              >
-                {{ lang.label }}
-              </b-dropdown-item>
-            </b-dropdown>
-          </div>
-        </div>
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.proxyMode') }}
-          </label>
-          <b-dropdown
-            v-model="settings.proxyMode"
-            aria-role="list"
-            :disabled="disableProxyMode"
+      <div :class="$style.inner">
+        <div :class="$style.container">
+          <Form
+            :class="$style.form"
+            :model="form"
+            :rules="rules"
+            @on-validate="validate"
+            @submit="saveSettings"
           >
-            <button class="button" type="button" slot="trigger">
-              <span> {{ currentProxyMode }}</span>
-              <b-icon icon="menu-down"></b-icon>
-            </button>
-            <b-dropdown-item
-              :key="mode.value"
-              :value="mode.value"
-              aria-role="listitem"
-              v-for="mode in proxyModes"
+            <FormItem
+              :label="$t('views.settings.preferredLanguages')"
+              :className="$style.formItem"
+              prop="language"
             >
-              {{ mode.label }}
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
-      </div>
-      <div :class="$style.row">
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.listeningIPAddress') }}
-          </label>
-          <div :class="$style.value">
-            <b-input v-model="settings.address"></b-input>
-          </div>
-        </div>
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.socksPort') }}
-          </label>
-          <div :class="$style.value">
-            <b-input v-model="settings.socksPort"></b-input>
-          </div>
-        </div>
-      </div>
-      <div :class="$style.row">
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.HTTPPort') }}
-          </label>
-          <div :class="$style.value">
-            <b-input v-model="settings.HTTPPort"></b-input>
-          </div>
-        </div>
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.PACPort') }}
-          </label>
-          <div :class="$style.value">
-            <b-input v-model="settings.PACPort"></b-input>
-          </div>
-        </div>
-      </div>
-      <div :class="$style.row">
-        <label :class="$style.label">
-          {{ $t('views.settings.PACURL') }}
-        </label>
-        <div :class="$style.url">
-          <b-input
-            v-model="settings.PACURL"
-            :placeholder="$t('views.settings.defaultPACURL')"
-          ></b-input>
-        </div>
-      </div>
-      <div :class="$style.row">
-        <div :class="$style.cell">
-          <label :class="$style.label">
-            {{ $t('views.settings.autoStartup') }}
-          </label>
-          <div :class="$style.value">
-            <b-switch v-model="settings.openAtLogin" type="is-success">
-            </b-switch>
-          </div>
-        </div>
-      </div>
-      <div :class="$style.row">
-        <div :class="$style.cell">
-          <b-button type="is-primary" @click="saveSettings">
-            {{ $t('views.settings.saveSettings') }}
-          </b-button>
+              <Select v-model="form.language" :popperClass="$style.popper">
+                <Option
+                  v-for="lang in i18nList"
+                  :value="lang.value"
+                  :key="lang.value"
+                  :label="lang.label"
+                >
+                </Option>
+              </Select>
+            </FormItem>
+            <FormItem
+              :label="$t('views.settings.proxyMode')"
+              :className="$style.formItem"
+              :disabled="disableProxyMode"
+              prop="proxyMode"
+            >
+              <Select v-model="form.proxyMode" :popperClass="$style.popper">
+                <Option
+                  v-for="mode in proxyModes"
+                  :value="mode.value"
+                  :key="mode.value"
+                  :label="mode.label"
+                >
+                </Option>
+              </Select>
+            </FormItem>
+            <FormItem
+              :label="$t('views.settings.listeningIPAddress')"
+              :className="$style.formItem"
+              prop="address"
+            >
+              <TanInput v-model="form.address"></TanInput>
+            </FormItem>
+            <FormItem
+              :label="$t('views.settings.socksPort')"
+              :className="$style.formItem"
+              prop="socksPort"
+            >
+              <TanInput v-model.number="form.socksPort"></TanInput>
+            </FormItem>
+            <FormItem
+              :label="$t('views.settings.HTTPPort')"
+              :className="$style.formItem"
+              prop="HTTPPort"
+            >
+              <TanInput v-model.number="form.HTTPPort"></TanInput>
+            </FormItem>
+            <FormItem
+              :label="$t('views.settings.PACPort')"
+              :className="$style.formItem"
+              prop="PACPort"
+            >
+              <TanInput v-model.number="form.PACPort"></TanInput>
+            </FormItem>
+            <FormItem
+              :label="$t('views.settings.PACURL')"
+              :className="$style.formURL"
+              prop="PACURL"
+            >
+              <TanInput
+                v-model="form.PACURL"
+                :placeholder="$t('views.settings.defaultPACURL')"
+              ></TanInput>
+            </FormItem>
+            <FormItem :className="$style.switchItem">
+              <div :class="$style.switch">
+                <TanSwitch v-model="form.openAtLogin">
+                  {{ $t('views.settings.autoStartup') }}
+                </TanSwitch>
+              </div>
+            </FormItem>
+            <div :class="$style.footer">
+              <Button mode="normal" @click="openConfirmResetModal">
+                {{ $t('views.settings.resetSettings') }}
+              </Button>
+              <Button type="submit" :disabled="!isValid">
+                {{ $t('views.settings.saveSettings') }}
+              </Button>
+            </div>
+          </Form>
+          <Modal v-model="confirmReset" type="danger" @on-ok="resetSettings">
+            <p :class="$style.resetTitle">
+              {{ $t('views.settings.sureToReset') }}
+            </p>
+          </Modal>
         </div>
       </div>
     </div>
@@ -125,25 +110,42 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { ipcRenderer, remote } from 'electron';
+import { namespace } from 'vuex-class';
+import message from '@/components/message';
+import { isLinux } from '@/utils/platform';
 import {
   START_TROJAN,
+  DEFAULT_LANG,
   DEFAULT_PROXY_MODE,
   DEFAULT_ADDRESS,
   DEFAULT_SOCKS_PORT,
   DEFAULT_HTTP_PORT,
-  DEFAULT_PAC_PORT,
-  isLinux
-} from '@/utils';
-import Store from 'electron-store';
-import { ISettings } from '@/types';
+  DEFAULT_PAC_PORT
+} from '@/utils/const';
+import { ISettings } from '@/store/types';
+import { SAVE_SETTINGS, RESET_SETTINGS } from '@/store';
 
 const { app } = remote;
-const store = new Store();
+const SettingsStore = namespace('settings');
 
 @Component
 export default class Settings extends Vue {
+  @SettingsStore.Getter('language') language!: string;
+  @SettingsStore.Getter('enableProxy') enableProxy!: boolean;
+  @SettingsStore.Getter('proxyMode') proxyMode!: string;
+  @SettingsStore.Getter('address') address!: string;
+  @SettingsStore.Getter('socksPort') socksPort!: number;
+  @SettingsStore.Getter('HTTPPort') HTTPPort!: number;
+  @SettingsStore.Getter('PACPort') PACPort!: number;
+  @SettingsStore.Getter('PACURL') PACURL!: string;
+  @SettingsStore.Getter('openAtLogin') openAtLogin!: boolean;
+  @SettingsStore.Mutation(SAVE_SETTINGS) mutationSaveSettings!: (
+    settings: ISettings
+  ) => void;
+  @SettingsStore.Mutation(RESET_SETTINGS) mutationResetSettings!: () => void;
+
   i18nList = [
     {
       value: 'en',
@@ -155,15 +157,65 @@ export default class Settings extends Vue {
     }
   ];
 
-  settings: ISettings = {
+  confirmReset = false;
+
+  validateResult: Dictionary<boolean> = {
+    language: true,
+    enableProxy: true,
+    proxyMode: true,
+    address: true,
+    socksPort: true,
+    HTTPPort: true,
+    PACPort: true,
+    PACURL: true,
+    openAtLogin: true
+  };
+
+  form: ISettings = {
+    language: DEFAULT_LANG,
+    enableProxy: false,
     proxyMode: DEFAULT_PROXY_MODE,
     address: DEFAULT_ADDRESS,
-    socksPort: DEFAULT_SOCKS_PORT.toString(),
-    HTTPPort: DEFAULT_HTTP_PORT.toString(),
-    PACPort: DEFAULT_PAC_PORT.toString(),
+    socksPort: DEFAULT_SOCKS_PORT,
+    HTTPPort: DEFAULT_HTTP_PORT,
+    PACPort: DEFAULT_PAC_PORT,
     PACURL: '',
     openAtLogin: false
   };
+
+  get rules() {
+    const required = {
+      required: true,
+      message: this.$i18n.t('validation.required'),
+      trigger: ['change', 'blur']
+    };
+    return {
+      language: [required],
+      proxyMode: [required],
+      address: [
+        required,
+        {
+          pattern: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9-]*[A-Za-z0-9])$/,
+          message: this.$i18n.t('validation.type'),
+          trigger: 'blur'
+        }
+      ],
+      socksPort: [{ ...{ type: 'number' }, ...required }],
+      HTTPPort: [{ ...{ type: 'number' }, ...required }],
+      PACPort: [{ ...{ type: 'number' }, ...required }],
+      PACURL: [
+        {
+          pattern: /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z+/=]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,
+          message: this.$i18n.t('validation.type'),
+          trigger: 'blur'
+        }
+      ]
+    };
+  }
+
+  get isValid() {
+    return Object.values(this.validateResult).every(result => result);
+  }
 
   get disableProxyMode() {
     return isLinux;
@@ -186,41 +238,58 @@ export default class Settings extends Vue {
     ];
   }
 
-  get currentLangText() {
-    return this.i18nList.find(lang => lang.value === this.$i18n.locale)?.label;
+  created() {
+    this.syncForm();
   }
 
-  get currentLang() {
-    return this.$i18n.locale;
-  }
-  set currentLang(lang: string) {
-    store.set('language', lang);
-    this.$i18n.locale = lang;
+  @Watch('proxyMode')
+  onProxyModeChanged() {
+    this.form.proxyMode = this.proxyMode;
   }
 
-  get currentProxyMode() {
-    return this.proxyModes.find(mode => mode.value === this.settings.proxyMode)
-      ?.label;
+  syncForm() {
+    this.form = {
+      language: this.language,
+      enableProxy: this.enableProxy,
+      proxyMode: this.proxyMode,
+      address: this.address,
+      socksPort: this.socksPort,
+      HTTPPort: this.HTTPPort,
+      PACPort: this.PACPort,
+      PACURL: this.PACURL,
+      openAtLogin: this.openAtLogin
+    };
   }
 
-  mounted() {
-    const settings = store.get('settings') as ISettings;
-    this.settings = Object.assign(this.settings, settings);
+  validate(valid: boolean, prop: string) {
+    this.validateResult[prop] = valid;
+  }
+
+  openConfirmResetModal() {
+    this.confirmReset = true;
+  }
+
+  resetSettings() {
+    this.mutationResetSettings();
+    message.success(this.$i18n.t('views.settings.resetSuccess') as string);
+    this.syncSettings();
   }
 
   saveSettings() {
-    store.set('settings', this.settings);
-    if (store.get('enableProxy')) {
+    this.mutationSaveSettings(this.form);
+    message.success(this.$i18n.t('views.settings.saveSuccess') as string);
+    this.syncSettings();
+  }
+
+  syncSettings() {
+    if (this.enableProxy) {
       ipcRenderer.send(START_TROJAN);
     }
     app.setLoginItemSettings({
-      openAtLogin: this.settings.openAtLogin
+      openAtLogin: this.openAtLogin
     });
-    this.$buefy.toast.open({
-      message: this.$i18n.t('views.settings.saved') as string,
-      type: 'is-success',
-      position: 'is-bottom-right'
-    });
+    this.$i18n.locale = this.language;
+    this.syncForm();
   }
 }
 </script>
@@ -235,8 +304,9 @@ export default class Settings extends Vue {
   height: 48px;
 }
 .title {
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
 }
 .body {
   position: relative;
@@ -244,27 +314,60 @@ export default class Settings extends Vue {
   flex: 1;
   background-color: var(--color-white);
 }
-.row {
+
+.inner {
   display: flex;
-  margin-bottom: 24px;
+  justify-content: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: auto;
 }
-.cell {
-  width: 50%;
+
+.container {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.form {
+  margin: 24px;
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  &Item {
+    width: 430px;
+  }
+
+  &URL {
+    width: 100%;
+  }
 }
-.label {
-  margin-right: 24px;
-  min-width: 160px;
+
+.popper {
+  width: 430px;
 }
-.button {
-  width: 200px;
+
+.switch {
+  width: 100%;
+
+  &Item {
+    width: 100%;
+    --height-content: 100%;
+  }
+}
+
+.footer {
+  width: 100%;
+  display: flex;
   justify-content: space-between;
 }
-.value {
-  width: 200px;
-}
-.url {
-  width: 600px;
+
+.resetTitle {
+  padding: 24px;
+  font-size: 16px;
+  font-weight: 600;
 }
 </style>

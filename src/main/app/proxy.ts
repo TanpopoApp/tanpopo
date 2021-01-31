@@ -1,4 +1,4 @@
-import { isMac, isWin } from '@/utils';
+import { isMac, isWin } from '@/utils/platform';
 import macProxy from './macProxy';
 import winProxy from './winProxy';
 class Proxy {

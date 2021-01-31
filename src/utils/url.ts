@@ -9,7 +9,7 @@ export function parseTrojanURL(url: string) {
       name: serverData[4],
       password: serverData[1],
       host: serverData[2],
-      port: serverData[3]
+      port: Number(serverData[3])
     };
     return serverInfo;
   } else {
