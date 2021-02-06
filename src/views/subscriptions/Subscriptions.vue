@@ -2,17 +2,13 @@
   <div :class="$style.subscriptions">
     <div :class="$style.head">
       <h1 :class="$style.title">{{ $t('views.subscriptions.title') }}</h1>
-      <b-button type="is-primary" @click="add">
+      <Button @click="add">
         {{ $t('views.subscriptions.addSubscription') }}
-      </b-button>
+      </Button>
     </div>
     <div :class="$style.body">
       <div :class="$style.list">
-        <Subscription
-          v-for="sub in subscriptions"
-          :key="sub.uuid"
-          :subInfo="sub"
-        />
+        <SubItem v-for="sub in subscriptions" :key="sub.uuid" :subInfo="sub" />
       </div>
       <div :class="$style.empty" v-if="showEmpty">
         <img src="@/assets/empty.svg" width="96" alt="empty icon" />
@@ -21,14 +17,14 @@
         </p>
       </div>
     </div>
-    <SubscriptionModal v-model="showAddSubscription" mode="add" />
+    <SubModal v-model="showAddSubscription" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Subscription from './components/Subscription.vue';
-import SubscriptionModal from './components/SubscriptionModal.vue';
+import SubModal from './components/SubModal.vue';
+import SubItem from './SubItem.vue';
 import { ISubscription } from '@/store/modules/subscription';
 import { namespace } from 'vuex-class';
 
@@ -36,8 +32,8 @@ const SubscriptionStore = namespace('subscription');
 
 @Component({
   components: {
-    SubscriptionModal,
-    Subscription
+    SubModal,
+    SubItem
   }
 })
 export default class Subscriptions extends Vue {
@@ -66,14 +62,14 @@ export default class Subscriptions extends Vue {
   height: 48px;
 }
 .title {
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
 }
 .body {
   position: relative;
   display: flex;
   justify-content: center;
-  padding: 16px;
   flex: 1;
   background-color: var(--color-white);
 }

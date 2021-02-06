@@ -1,10 +1,9 @@
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
 import trojan from './trojan';
 import tray from './tray';
 import ping from './ping';
 import country from './country';
 import { appWindow } from './window';
-import { REBOOT } from '@/utils';
 
 class App {
   start() {
@@ -12,10 +11,8 @@ class App {
     ping.startPingService();
     country.startQueryCountryService();
     trojan.init();
-    ipcMain.on(REBOOT, () => {
-      this.reboot();
-    });
   }
+
   async stop() {
     await trojan.stop();
   }

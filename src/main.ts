@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import '@/plugins/buefy';
 import '@/components';
 import App from './App.vue';
 import router from './router';

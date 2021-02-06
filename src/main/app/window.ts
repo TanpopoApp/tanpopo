@@ -1,8 +1,10 @@
 import { BrowserWindow } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
-import { appIcon } from '@/utils';
+import { appIcon } from '@/utils/util';
 
 class AppWindow {
+  // Keep a global reference of the window object, if you don't, the window will
+  // be closed automatically when the JavaScript object is garbage collected.
   win: BrowserWindow | null = null;
   isQuiting = false;
 

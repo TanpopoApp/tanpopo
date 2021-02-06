@@ -30,9 +30,12 @@ export function getSubscriptionNodes(URL: string) {
       if (res.ok) {
         const text = await res.text();
         return resolveNodes(text);
+      } else {
+        throw res.status;
       }
     })
     .catch((err: Error) => {
-      log.info(err);
+      log.warn(URL);
+      log.warn(err.message);
     });
 }

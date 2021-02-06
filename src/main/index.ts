@@ -3,10 +3,6 @@ import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import client, { appWindow } from '@/main/app';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-// let win: BrowserWindow | null;
-
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }

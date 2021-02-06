@@ -1,7 +1,11 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators';
-import * as types from '../types';
-import { ipcRenderer } from 'electron';
-import { START_TROJAN } from '@/utils';
+import {
+  ADD_SERVER,
+  UPDATE_SERVER,
+  SELECT_SERVER,
+  REMOVE_SERVER
+} from '../mutations.type';
+
 import Store from 'electron-store';
 
 export type IServer = IBasicServer | IAdvancedServer;
@@ -10,7 +14,7 @@ export interface IBasicServer {
   name: string;
   password: string;
   host: string;
-  port: string;
+  port: number;
   sni?: string;
   verify?: boolean;
   verifyHostname?: boolean;
@@ -20,7 +24,7 @@ export interface IBasicServer {
 export interface IAdvancedServer {
   uuid: string;
   name: string;
-  json: any;
+  json: string;
 }
 
 export interface State {
@@ -37,29 +41,30 @@ export default class Server extends VuexModule implements State {
   selectedServer: IServer = (store.get('selectedServer') as IServer) || {};
 
   @Mutation
-  [types.ADD_SERVER](server: IServer) {
+  [ADD_SERVER](server: IServer) {
     this.servers.push(server);
     store.set('servers', this.servers);
   }
 
   @Mutation
-  [types.UPDATE_SERVER](server: IServer) {
+  [UPDATE_SERVER](server: IServer) {
     const index = this.servers.findIndex(item => item.uuid === server.uuid);
     this.servers.splice(index, 1, server);
     store.set('servers', this.servers);
   }
 
   @Mutation
-  [types.SELECT_SERVER](server: IServer) {
+  [SELECT_SERVER](server: IServer) {
     this.selectedServer = server;
     store.set('selectedServer', server);
-    if (store.get('enableProxy')) {
-      ipcRenderer.send(START_TROJAN);
-    }
+    // if (store.get('enableProxy')) {
+    //   ipcRenderer.send(START_TROJAN);
+    // }
   }
 
   @Mutation
-  [types.REMOVE_SERVER](index: number) {
+  [REMOVE_SERVER](server: IServer) {
+    const index = this.servers.findIndex(item => item.uuid === server.uuid);
     this.servers.splice(index, 1);
     store.set('servers', this.servers);
   }

@@ -2,19 +2,18 @@
   <div :class="$style.logs">
     <div :class="$style.head">
       <h1 :class="$style.title">{{ $t('views.logs.title') }}</h1>
-      <b-button @click="clear">
+      <Button @click="clear" mode="normal">
         {{ $t('views.logs.clearLogs') }}
-      </b-button>
+      </Button>
     </div>
     <div :class="$style.body">
-      <textarea
-        class="textarea"
-        :class="$style.bodyInner"
+      <TanInput
+        :class="$style.textarea"
         :value="log"
         :readonly="true"
-        ref="textarea"
-      >
-      </textarea>
+        type="textarea"
+        :rows="false"
+      />
     </div>
   </div>
 </template>
@@ -69,25 +68,18 @@ export default class Logs extends Vue {
   height: 48px;
 }
 .title {
-  font-size: 22px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
 }
 .body {
   position: relative;
   padding: 16px;
   flex: 1;
   background-color: var(--color-white);
+}
 
-  &Inner {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100% !important;
-    top: 0;
-    left: 0;
-    white-space: pre-wrap;
-    resize: none;
-  }
+.textarea {
+  display: block;
 }
 </style>

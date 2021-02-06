@@ -1,9 +1,10 @@
-import { IBasicServer, IAdvancedServer, IServer } from '@/store/modules/server';
 import { ipcMain } from 'electron';
 import fetch, { RequestInfo, RequestInit } from 'node-fetch';
 import { promises as dns } from 'dns';
+import { IBasicServer, IAdvancedServer, IServer } from '@/store/modules/server';
+import { isIPv4, isIPv6 } from '@/utils/util';
+import { QUERY_COUNTRY, ANSWER_COUNTRY } from '@/utils/const';
 import { GeoIP } from '@/types';
-import { QUERY_COUNTRY, ANSWER_COUNTRY, isIPv4, isIPv6 } from '@/utils';
 
 class Country {
   startQueryCountryService() {

@@ -1,7 +1,7 @@
-import { IBasicServer, IAdvancedServer, IServer } from '@/store/modules/server';
 import { ipcMain } from 'electron';
 import ping from 'pingman';
-import { SEND_PING, RECEIVE_PING } from '@/utils';
+import { SEND_PING, RECEIVE_PING } from '@/utils/const';
+import { IBasicServer, IAdvancedServer, IServer } from '@/store/modules/server';
 
 class Ping {
   startPingService() {

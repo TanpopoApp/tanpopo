@@ -1,6 +1,7 @@
 export const START_TROJAN = 'startTrojan';
 export const STOP_TROJAN = 'stopTrojan';
 
+export const DEFAULT_LANG = 'en';
 export const DEFAULT_PROXY_MODE = 'local';
 export const DEFAULT_ADDRESS = '127.0.0.1';
 export const DEFAULT_SOCKS_PORT = 1080;
@@ -17,3 +18,5 @@ export const REBOOT = 'reboot';
 
 export const QUERY_COUNTRY = 'queryCountry';
 export const ANSWER_COUNTRY = 'answerCountry';
+
+export const SYNC_STORE = 'syncStore';

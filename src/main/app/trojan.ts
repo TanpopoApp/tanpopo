@@ -1,22 +1,19 @@
 import { app, ipcMain } from 'electron';
 import path from 'path';
-import Store from 'electron-store';
 import fs from 'fs-extra';
 import log from 'electron-log';
 import child_process from 'child_process';
-import { IAdvancedServer, IBasicServer, IServer } from '@/store/modules/server';
-import { Dictionary, ISettings } from '@/types';
-import port from './port';
-import privoxy from './privoxy';
-import proxy from './proxy';
+import { IAdvancedServer, IBasicServer } from '@/store/modules/server';
 import {
   START_TROJAN,
   STOP_TROJAN,
   DEFAULT_ADDRESS,
   DEFAULT_SOCKS_PORT
-} from '@/utils';
-
-const store = new Store();
+} from '@/utils/const';
+import port from './port';
+import privoxy from './privoxy';
+import proxy from './proxy';
+import store from './store';
 
 class Trojan {
   helperPath: string;
@@ -46,7 +43,7 @@ class Trojan {
   }
 
   async init() {
-    if (store.get('enableProxy')) {
+    if (store.enableProxy) {
       this.start();
     }
     ipcMain.on(START_TROJAN, () => {
@@ -58,8 +55,7 @@ class Trojan {
   }
 
   async generateConfig() {
-    const selectedServer: IServer = store.get('selectedServer') as IServer;
-    const settings: ISettings = (store.get('settings') as ISettings) || {};
+    const selectedServer = store.selectedServer;
     if ((selectedServer as IAdvancedServer).json) {
       this.config = JSON.parse((selectedServer as IAdvancedServer).json);
     } else {
@@ -75,8 +71,8 @@ class Trojan {
         basicServer.fastOpen === undefined ? false : basicServer.fastOpen;
 
       this.config = Object.assign(this.config, {
-        local_addr: settings.address || DEFAULT_ADDRESS,
-        local_port: Number(settings.socksPort || DEFAULT_SOCKS_PORT),
+        local_addr: store.address,
+        local_port: store.socksPort,
         remote_addr: basicServer.host,
         remote_port: basicServer.port,
         password: [basicServer.password],
