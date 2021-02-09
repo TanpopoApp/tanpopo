@@ -10,9 +10,15 @@ import message from '@/components/message';
 import { ipcRenderer } from 'electron';
 import { namespace } from 'vuex-class';
 import { SYNC_STORE, USED_PORT } from './utils/const';
-import { INIT_SETTINGS, SYNC_SETTINGS, UPDATE_PROXY } from '@/store';
+import {
+  INIT_SETTINGS,
+  SYNC_SETTINGS,
+  UPDATE_PROXY,
+  SYNC_SERVER
+} from '@/store';
 import { ISettings } from './store/types';
 const SettingsStore = namespace('settings');
+const ServerStore = namespace('server');
 
 @Component
 export default class App extends Vue {
@@ -23,6 +29,7 @@ export default class App extends Vue {
   @SettingsStore.Mutation(UPDATE_PROXY) mutationUpdateProxy!: (
     val: boolean
   ) => void;
+  @ServerStore.Mutation(SYNC_SERVER) mutationSyncServer!: () => void;
 
   get enableStatus() {
     return this.enableProxy;
@@ -34,6 +41,7 @@ export default class App extends Vue {
   created() {
     ipcRenderer.on(SYNC_STORE, () => {
       this.mutationSyncSettings();
+      this.mutationSyncServer();
     });
     ipcRenderer.on(USED_PORT, (event, port) => {
       message.warning(

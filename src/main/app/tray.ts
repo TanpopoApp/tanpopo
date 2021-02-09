@@ -4,6 +4,7 @@ import { isMac, isWin, isLinux } from '@/utils/platform';
 import { trayIcon } from '@/utils/util';
 import zh from '@/i18n/lang/zh-CN';
 import en from '@/i18n/lang/en';
+import { ISubscription } from '@/store/types';
 import trojan from './trojan';
 import { appWindow } from './window';
 import store from './store';
@@ -46,6 +47,61 @@ class TrayMenu {
     appWindow.createWindow();
   }
 
+  get servers() {
+    const serversInfo = store.servers;
+    const selectedServerInfo = store.selectedServer;
+    return serversInfo.map(server => {
+      return {
+        type: 'checkbox',
+        label: server.name,
+        checked: server.uuid === selectedServerInfo.uuid,
+        click: () => {
+          this.selectServer(server.uuid);
+        }
+      };
+    });
+  }
+
+  async selectServer(id: string) {
+    const selectedServer = store.servers.find(server => server.uuid === id);
+    if (selectedServer) {
+      store.selectedServer = selectedServer;
+      if (store.enableProxy) {
+        await trojan.start();
+      }
+    }
+  }
+
+  get subscriptions() {
+    const subsInfo = store.subscriptions;
+    const selectedServerInfo = store.selectedServer;
+    return subsInfo.map(sub => {
+      return {
+        label: sub.name,
+        submenu: sub.nodes!.map(node => {
+          return {
+            type: 'checkbox',
+            label: node.name,
+            checked: node.uuid === selectedServerInfo.uuid,
+            click: () => {
+              this.selectSubServer(sub, node.uuid);
+            }
+          };
+        })
+      };
+    });
+  }
+
+  async selectSubServer(sub: ISubscription, id: string) {
+    const selectedServer = sub.nodes!.find(server => server.uuid === id);
+    if (selectedServer) {
+      store.selectedServer = selectedServer;
+      if (store.enableProxy) {
+        await trojan.start();
+      }
+    }
+  }
+
   updateMenu() {
     const menuTemplate = [
       { label: this.getLang()!.tray.showPanel, click: this.show },
@@ -65,6 +121,15 @@ class TrayMenu {
             : this.getLang()!.common.enable
         } ${this.getLang()!.common.title}`,
         click: this.toggleTrojan
+      },
+      { type: 'separator' },
+      {
+        label: `${this.getLang()!.views.servers.title}`,
+        submenu: this.servers
+      },
+      {
+        label: `${this.getLang()!.views.subscriptions.title}`,
+        submenu: this.subscriptions
       },
       ...(isLinux
         ? []
