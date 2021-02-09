@@ -8,12 +8,13 @@ import {
   DEFAULT_PAC_PORT,
   SYNC_STORE
 } from '@/utils/const';
-import { IServer, ISettings } from '@/store/types';
+import { IServer, ISubscription, ISettings } from '@/store/types';
 import { appWindow } from './window';
 
 class Storage {
   store = new Store();
   settings: ISettings;
+
   constructor() {
     this.settings = (this.store.get('settings') as ISettings) || {};
   }
@@ -29,8 +30,22 @@ class Storage {
     }
   }
 
+  get servers() {
+    return (this.store.get('servers') as Array<IServer>) || [];
+  }
+
+  get subscriptions() {
+    return (this.store.get('subscriptions') as Array<ISubscription>) || [];
+  }
+
   get selectedServer() {
     return (this.store.get('selectedServer') as IServer) || {};
+  }
+  set selectedServer(server: IServer) {
+    this.store.set('selectedServer', server);
+    if (appWindow.win) {
+      appWindow.win.webContents.send(SYNC_STORE);
+    }
   }
 
   get language() {

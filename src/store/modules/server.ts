@@ -3,7 +3,8 @@ import {
   ADD_SERVER,
   UPDATE_SERVER,
   SELECT_SERVER,
-  REMOVE_SERVER
+  REMOVE_SERVER,
+  SYNC_SERVER
 } from '../mutations.type';
 
 import Store from 'electron-store';
@@ -57,9 +58,12 @@ export default class Server extends VuexModule implements State {
   [SELECT_SERVER](server: IServer) {
     this.selectedServer = server;
     store.set('selectedServer', server);
-    // if (store.get('enableProxy')) {
-    //   ipcRenderer.send(START_TROJAN);
-    // }
+  }
+
+  @Mutation
+  [SYNC_SERVER]() {
+    this.servers = (store.get('servers') as Array<IServer>) || [];
+    this.selectedServer = (store.get('selectedServer') as IServer) || {};
   }
 
   @Mutation
