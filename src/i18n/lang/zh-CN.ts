@@ -1,6 +1,7 @@
 export default {
   common: {
     title: 'Tanpopo',
+    copy: '复制',
     add: '添加',
     update: '更新',
     cancel: '取消',
@@ -16,7 +17,9 @@ export default {
     offline: '离线',
     option: '可选',
     confirmation: '确认',
-    inputError: '输入有误，请检查您的输入。'
+    inputError: '输入有误，请检查您的输入。',
+    copySuccess: '复制成功！',
+    copyFailed: '复制失败。'
   },
   layout: {
     sidebar: {
@@ -86,6 +89,7 @@ export default {
     },
     settings: {
       title: '设置',
+      clearAll: '清空所有数据',
       resetSettings: '重置设置',
       saveSettings: '保存设置',
       saved: '设置已保存',
@@ -102,10 +106,13 @@ export default {
       PACPort: 'PAC文件端口',
       PACURL: 'PAC 地址',
       autoStartup: '开机自启',
+      hiddenWindows: '开启时隐藏窗口',
       defaultPACURL: '默认使用gfwlist作为PAC规则。',
       saveSuccess: '设置已保存。',
       resetSuccess: '设置已重置。',
-      sureToReset: '您确定要重置设置么？'
+      sureToReset: '您确定要重置设置么？',
+      sureToClear: '您确定要清除所有数据么？?',
+      clearSuccess: '数据已清除。'
     },
     about: {
       title: '关于',

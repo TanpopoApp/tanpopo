@@ -5,9 +5,9 @@ import { IBasicServer, IAdvancedServer, IServer } from '@/store/modules/server';
 
 class Ping {
   startPingService() {
-    ipcMain.on(SEND_PING, async (event, server: IServer, uuid: string) => {
+    ipcMain.on(SEND_PING, async (event, server: IServer) => {
       const info = await this.getPingInfo(server);
-      event.reply(RECEIVE_PING, info, uuid);
+      event.reply(RECEIVE_PING, info);
     });
   }
 

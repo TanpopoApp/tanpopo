@@ -12,7 +12,7 @@
           <TanInput v-model.number="form.port"></TanInput>
         </FormItem>
         <FormItem :label="$t('views.servers.password')" prop="password">
-          <TanInput v-model="form.password"></TanInput>
+          <TanInput v-model="form.password" type="password"></TanInput>
         </FormItem>
         <FormItem
           :label="`${$t('views.servers.sni')}(${$t('common.option')})`"

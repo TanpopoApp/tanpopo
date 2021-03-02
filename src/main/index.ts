@@ -1,6 +1,7 @@
 import { app, protocol } from 'electron';
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import client, { appWindow } from '@/main/app';
+import { isMac, isWin } from '@/utils/platform';
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Scheme must be registered before the app is ready
@@ -38,7 +39,18 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString());
     }
   }
-  appWindow.createWindow();
+  if (isMac) {
+    if (!app.getLoginItemSettings().wasOpenedAsHidden) {
+      appWindow.createWindow();
+    }
+  } else if (isWin) {
+    if (!process.argv.includes('--hidden')) {
+      appWindow.createWindow();
+    }
+  } else {
+    appWindow.createWindow();
+  }
+
   client.start();
 });
 

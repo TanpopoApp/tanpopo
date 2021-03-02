@@ -1,5 +1,5 @@
 <template>
-  <Modal v-model="value">
+  <Modal v-model="showModal">
     <div :class="$style.head">
       <p :class="$style.title">
         {{ $t('views.servers.addServer') }}
@@ -61,11 +61,18 @@ export default class AddServer extends Vue {
 
   mode: Mode = 'select';
 
-  @Watch('value')
+  @Watch('showModal')
   onShowModal() {
-    if (this.value) {
+    if (this.showModal) {
       this.mode = 'select';
     }
+  }
+
+  get showModal() {
+    return this.value;
+  }
+  set showModal(val: boolean) {
+    this.$emit('input', val);
   }
 
   get selectMode() {

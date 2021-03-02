@@ -26,6 +26,7 @@ export interface ISettings {
   PACPort: number;
   PACURL: string;
   openAtLogin: boolean;
+  openAsHidden: boolean;
 }
 
 export interface State {
@@ -76,6 +77,10 @@ export default class Settings extends VuexModule implements State {
     return this.settings.openAtLogin || false;
   }
 
+  get openAsHidden() {
+    return this.settings.openAsHidden || false;
+  }
+
   @Mutation
   [UPDATE_PROXY](val: boolean) {
     this.settings.enableProxy = val;
@@ -104,7 +109,8 @@ export default class Settings extends VuexModule implements State {
       HTTPPort: DEFAULT_HTTP_PORT,
       PACPort: DEFAULT_PAC_PORT,
       PACURL: '',
-      openAtLogin: false
+      openAtLogin: false,
+      openAsHidden: false
     };
     this.settings = defaultSettings;
     store.set('settings', this.settings);
@@ -121,7 +127,8 @@ export default class Settings extends VuexModule implements State {
       HTTPPort: DEFAULT_HTTP_PORT,
       PACPort: DEFAULT_PAC_PORT,
       PACURL: '',
-      openAtLogin: false
+      openAtLogin: false,
+      openAsHidden: false
     };
     this.settings = initSettings;
     store.set('settings', this.settings);

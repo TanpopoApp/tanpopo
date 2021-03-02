@@ -30,7 +30,7 @@
     <input
       v-else
       ref="input"
-      :type="type"
+      :type="inputType"
       :autocomplete="autocomplete"
       :class="{
         [$style.inner]: true,
@@ -56,6 +56,12 @@
         :className="`${$style.icon} ${$style.clearIcon}`"
         @click.native.stop="clearInput"
         v-if="showClearButton"
+      />
+      <Icon
+        :name="eyeIcon"
+        :className="`${$style.icon} ${$style.eyeIcon}`"
+        @click.native.stop="togglePasswordInput"
+        v-if="showEyeButton"
       />
       <Icon
         name="waiting"
@@ -89,6 +95,8 @@ export default class Input extends Vue {
   currentValue = this.value;
   inputHover = false;
 
+  passwordInputType = 'password';
+
   @Watch('value')
   onValueChanged() {
     this.currentValue = this.value;
@@ -96,8 +104,31 @@ export default class Input extends Vue {
     this.emitFormItem('on-form-change');
   }
 
+  get inputType() {
+    if (this.isPasswordType) {
+      return this.passwordInputType;
+    } else {
+      return this.type;
+    }
+  }
   get showClearButton() {
     return this.clearable && !this.disabled && !!this.currentValue;
+  }
+
+  get showEyeButton() {
+    return this.isPasswordType;
+  }
+
+  get isPasswordType() {
+    return this.type === 'password';
+  }
+
+  get eyeIcon() {
+    if (this.passwordInputType === 'password') {
+      return 'eye';
+    } else {
+      return 'eye-closed';
+    }
   }
 
   get inValidState() {
@@ -118,6 +149,14 @@ export default class Input extends Vue {
 
   get istextArea() {
     return this.type === 'textarea';
+  }
+
+  togglePasswordInput() {
+    if (this.passwordInputType === 'password') {
+      this.passwordInputType = 'text';
+    } else {
+      this.passwordInputType = 'password';
+    }
   }
 
   clearInput() {
@@ -191,6 +230,10 @@ export default class Input extends Vue {
   .clearIcon {
     cursor: pointer;
     visibility: hidden;
+  }
+
+  .eyeIcon {
+    cursor: pointer;
   }
 
   .loadingIcon {
