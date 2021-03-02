@@ -1,6 +1,6 @@
 {
   "name": "tanpopo",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "author": "trojan",
   "description": "Trojan client building from electron",

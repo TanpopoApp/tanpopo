@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Watch, Prop } from 'vue-property-decorator';
 import zIndexManager from '@/utils/zIndexManager';
 
 type ModalActionType = 'primary' | 'danger';
@@ -57,10 +57,18 @@ export default class Modal extends Vue {
   @Prop({ default: false, type: Boolean }) readonly value!: boolean;
   @Prop({ default: false, type: Boolean }) readonly instance!: boolean;
   @Prop() readonly onDestory!: () => void;
-  @Prop() readonly onOK!: () => void;
   zIndex: number = zIndexManager.increase();
 
   instanceOpen = true;
+
+  @Watch('showModal')
+  onShowModal() {
+    if (this.showModal) {
+      document.addEventListener('keydown', this.escClose);
+    } else {
+      document.removeEventListener('keydown', this.escClose);
+    }
+  }
 
   get styles() {
     const styles: Dictionary<number | string> = {};
@@ -74,10 +82,6 @@ export default class Modal extends Vue {
     } else {
       return this.value;
     }
-  }
-
-  mounted() {
-    document.addEventListener('keyup', this.escClose);
   }
 
   closeModal() {
@@ -95,15 +99,8 @@ export default class Modal extends Vue {
   }
 
   clickOK() {
-    if (this.onOK) {
-      this.onOK();
-    }
     this.$emit('on-ok');
     this.closeModal();
-  }
-
-  beforeDestroy() {
-    document.removeEventListener('keyup', this.escClose);
   }
 
   afterLeave() {

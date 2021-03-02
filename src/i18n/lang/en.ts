@@ -1,6 +1,7 @@
 export default {
   common: {
     title: 'Tanpopo',
+    copy: 'Copy',
     add: 'Add',
     update: 'Update',
     cancel: 'Cancel',
@@ -16,7 +17,9 @@ export default {
     offline: 'Offline',
     option: 'Option',
     confirmation: 'Confirmation',
-    inputError: 'Input error, please check your input.'
+    inputError: 'Input error, please check your input.',
+    copySuccess: 'Copy success!',
+    copyFailed: 'Copy Failed.'
   },
   layout: {
     sidebar: {
@@ -88,6 +91,7 @@ export default {
     },
     settings: {
       title: 'Settings',
+      clearAll: 'Clear All Data',
       resetSettings: 'Reset Settings',
       saveSettings: 'Save Settings',
       saved: 'Settings saved',
@@ -104,10 +108,13 @@ export default {
       PACPort: 'PAC File Port',
       PACURL: 'PAC URL',
       autoStartup: 'Auto Startup',
+      hiddenWindows: 'Hide window at Startup',
       defaultPACURL: 'Default use gfwlist as pac rule.',
       saveSuccess: 'Settings Info saved.',
       resetSuccess: 'Settings Info reseted.',
-      sureToReset: 'Would you like to reset settings?'
+      sureToReset: 'Would you like to reset settings?',
+      sureToClear: 'Would you like to clear all data?',
+      clearSuccess: 'All data clearede.'
     },
     about: {
       title: 'About',

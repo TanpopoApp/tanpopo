@@ -82,13 +82,21 @@
                 :placeholder="$t('views.settings.defaultPACURL')"
               ></TanInput>
             </FormItem>
-            <FormItem :className="$style.switchItem">
-              <div :class="$style.switch">
-                <TanSwitch v-model="form.openAtLogin">
-                  {{ $t('views.settings.autoStartup') }}
-                </TanSwitch>
-              </div>
-            </FormItem>
+            <div :class="$style.option">
+              <TanSwitch v-model="form.openAtLogin">
+                {{ $t('views.settings.autoStartup') }}
+              </TanSwitch>
+              <TanSwitch v-model="form.openAsHidden" :class="$style.button">
+                {{ $t('views.settings.hiddenWindows') }}
+              </TanSwitch>
+              <Button
+                mode="danger"
+                :class="$style.button"
+                @click="openConfirmClearModal"
+              >
+                {{ $t('views.settings.clearAll') }}
+              </Button>
+            </div>
             <div :class="$style.footer">
               <Button mode="normal" @click="openConfirmResetModal">
                 {{ $t('views.settings.resetSettings') }}
@@ -103,6 +111,11 @@
               {{ $t('views.settings.sureToReset') }}
             </p>
           </Modal>
+          <Modal v-model="confirmClear" type="danger" @on-ok="clearAll">
+            <p :class="$style.clearTitle">
+              {{ $t('views.settings.sureToClear') }}
+            </p>
+          </Modal>
         </div>
       </div>
     </div>
@@ -114,6 +127,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { ipcRenderer, remote } from 'electron';
 import { namespace } from 'vuex-class';
 import message from '@/components/message';
+import Store from 'electron-store';
 import { isLinux } from '@/utils/platform';
 import {
   START_TROJAN,
@@ -127,6 +141,7 @@ import {
 import { ISettings } from '@/store/types';
 import { SAVE_SETTINGS, RESET_SETTINGS } from '@/store';
 
+const store = new Store();
 const { app } = remote;
 const SettingsStore = namespace('settings');
 
@@ -141,6 +156,7 @@ export default class Settings extends Vue {
   @SettingsStore.Getter('PACPort') PACPort!: number;
   @SettingsStore.Getter('PACURL') PACURL!: string;
   @SettingsStore.Getter('openAtLogin') openAtLogin!: boolean;
+  @SettingsStore.Getter('openAsHidden') openAsHidden!: boolean;
   @SettingsStore.Mutation(SAVE_SETTINGS) mutationSaveSettings!: (
     settings: ISettings
   ) => void;
@@ -158,6 +174,7 @@ export default class Settings extends Vue {
   ];
 
   confirmReset = false;
+  confirmClear = false;
 
   validateResult: Dictionary<boolean> = {
     language: true,
@@ -180,7 +197,8 @@ export default class Settings extends Vue {
     HTTPPort: DEFAULT_HTTP_PORT,
     PACPort: DEFAULT_PAC_PORT,
     PACURL: '',
-    openAtLogin: false
+    openAtLogin: false,
+    openAsHidden: false
   };
 
   get rules() {
@@ -257,7 +275,8 @@ export default class Settings extends Vue {
       HTTPPort: this.HTTPPort,
       PACPort: this.PACPort,
       PACURL: this.PACURL,
-      openAtLogin: this.openAtLogin
+      openAtLogin: this.openAtLogin,
+      openAsHidden: this.openAsHidden
     };
   }
 
@@ -267,6 +286,18 @@ export default class Settings extends Vue {
 
   openConfirmResetModal() {
     this.confirmReset = true;
+  }
+
+  openConfirmClearModal() {
+    this.confirmClear = true;
+  }
+
+  clearAll() {
+    store.clear();
+    message.success(this.$i18n.t('views.settings.clearSuccess') as string);
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
   }
 
   resetSettings() {
@@ -285,9 +316,19 @@ export default class Settings extends Vue {
     if (this.enableProxy) {
       ipcRenderer.send(START_TROJAN);
     }
-    app.setLoginItemSettings({
-      openAtLogin: this.openAtLogin
-    });
+    if (this.openAsHidden) {
+      app.setLoginItemSettings({
+        openAtLogin: this.openAtLogin,
+        openAsHidden: true,
+        args: ['--hidden']
+      });
+    } else {
+      app.setLoginItemSettings({
+        openAtLogin: this.openAtLogin,
+        openAsHidden: false
+      });
+    }
+
     this.$i18n.locale = this.language;
     this.syncForm();
   }
@@ -350,13 +391,14 @@ export default class Settings extends Vue {
   width: 430px;
 }
 
-.switch {
-  width: 100%;
+.option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+}
 
-  &Item {
-    width: 100%;
-    --height-content: 100%;
-  }
+.button {
+  margin-left: 16px;
 }
 
 .footer {
@@ -365,7 +407,8 @@ export default class Settings extends Vue {
   justify-content: space-between;
 }
 
-.resetTitle {
+.resetTitle,
+.clearTitle {
   padding: 24px;
   font-size: 16px;
   font-weight: 600;

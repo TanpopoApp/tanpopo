@@ -48,29 +48,13 @@
     <Modal v-model="confirmDelete" type="danger" @on-ok="remove">
       <p :class="$style.removeTitle">{{ confirmDeleteText }}</p>
     </Modal>
-    <Modal v-model="showQRCode">
-      <div :class="$style.head">
-        <p :class="$style.title">
-          {{ $t('views.servers.qrCode') }}
-        </p>
-        <button @click="closeQRCodeModal" :class="$style.close">
-          <Icon name="close" />
-        </button>
-      </div>
-      <div :class="$style.qrcode">
-        <img :src="qrcodeURL" width="160" height="160" alt="QR Code" />
-      </div>
-      <template v-slot:footer>
-        <span></span>
-      </template>
-    </Modal>
+    <QRCode v-model="showQRCode" :server="server" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
-import QRCode from 'qrcode';
 import { ipcRenderer } from 'electron';
 import { UPDATE_SERVER, REMOVE_SERVER } from '@/store';
 import { IAdvancedServer, IServer } from '@/store/modules/server';
@@ -84,6 +68,7 @@ import {
 import Country from '@/components/Country.vue';
 import Manual from './components/Manual.vue';
 import JSON from './components/JSON.vue';
+import QRCode from '@/components/views/QRCode.vue';
 import { GeoIP } from '@/types';
 
 const ServerStore = namespace('server');
@@ -92,7 +77,8 @@ const ServerStore = namespace('server');
   components: {
     Country,
     Manual,
-    JSON
+    JSON,
+    QRCode
   }
 })
 export default class ServerItem extends Vue {
@@ -110,8 +96,6 @@ export default class ServerItem extends Vue {
   showEdit = false;
   confirmDelete = false;
   showQRCode = false;
-
-  qrcodeURL = '';
 
   get isJSONServer() {
     return !!(this.server as IAdvancedServer).json;
@@ -193,18 +177,7 @@ export default class ServerItem extends Vue {
   }
 
   openQRCodeModal() {
-    if (!this.qrcodeURL) {
-      const serverInfo = this.isJSONServer
-        ? window.JSON.parse((this.server as IAdvancedServer).json)
-        : this.server;
-      const url = `trojan://${serverInfo.password}@${serverInfo.host}:${serverInfo.port}#${serverInfo.name}`;
-      QRCode.toDataURL(url, { width: 320 }).then(dataURL => {
-        this.qrcodeURL = dataURL;
-        this.showQRCode = true;
-      });
-    } else {
-      this.showQRCode = true;
-    }
+    this.showQRCode = true;
   }
 
   closeQRCodeModal() {
@@ -265,6 +238,13 @@ export default class ServerItem extends Vue {
   }
 }
 
+.body {
+  margin: 16px;
+  display: flex;
+  justify-content: space-between;
+  overflow: auto;
+}
+
 .head {
   display: flex;
   align-items: center;
@@ -286,13 +266,6 @@ export default class ServerItem extends Vue {
   &:hover {
     background-color: var(--color-hover);
   }
-}
-
-.body {
-  margin: 16px;
-  display: flex;
-  justify-content: space-between;
-  overflow: auto;
 }
 
 .qrcode {

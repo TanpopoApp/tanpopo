@@ -46,43 +46,28 @@
         <span></span>
       </template>
     </Modal>
-
-    <Modal v-model="showQRCode">
-      <div :class="$style.head">
-        <p :class="$style.title">
-          {{ $t('views.servers.qrCode') }}
-        </p>
-        <button @click="closeQRCodeModal" :class="$style.close">
-          <Icon name="close" />
-        </button>
-      </div>
-      <div :class="$style.qrcode">
-        <img :src="qrcodeURL" width="160" height="160" alt="QR Code" />
-      </div>
-      <template v-slot:footer>
-        <span></span>
-      </template>
-    </Modal>
+    <QRCode v-model="showQRCode" :server="server" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import QRCode from 'qrcode';
 import { ipcRenderer } from 'electron';
-import { IBasicServer, IServer } from '@/store/modules/server';
+import { IServer } from '@/store/modules/server';
 import {
   SEND_PING,
   RECEIVE_PING,
   QUERY_COUNTRY,
   ANSWER_COUNTRY
 } from '@/utils/const';
+import QRCode from '@/components/views/QRCode.vue';
 import Country from '@/components/Country.vue';
 import { GeoIP } from '@/types';
 
 @Component({
   components: {
-    Country
+    Country,
+    QRCode
   }
 })
 export default class ServerItem extends Vue {
@@ -92,8 +77,6 @@ export default class ServerItem extends Vue {
   countryInfo: GeoIP = {} as GeoIP;
   showInfo = false;
   showQRCode = false;
-
-  qrcodeURL = '';
 
   get country() {
     return (
@@ -149,16 +132,7 @@ export default class ServerItem extends Vue {
   }
 
   openQRCodeModal() {
-    if (!this.qrcodeURL) {
-      const serverInfo = this.server as IBasicServer;
-      const url = `trojan://${serverInfo.password}@${serverInfo.host}:${serverInfo.port}#${serverInfo.name}`;
-      QRCode.toDataURL(url, { width: 320 }).then(dataURL => {
-        this.qrcodeURL = dataURL;
-        this.showQRCode = true;
-      });
-    } else {
-      this.showQRCode = true;
-    }
+    this.showQRCode = true;
   }
 
   closeQRCodeModal() {
