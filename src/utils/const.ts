@@ -7,6 +7,7 @@ export const DEFAULT_ADDRESS = '127.0.0.1';
 export const DEFAULT_SOCKS_PORT = 1080;
 export const DEFAULT_HTTP_PORT = 1087;
 export const DEFAULT_PAC_PORT = 1088;
+export const DEFAULT_THEME = 'system';
 export const DEFAULT_PAC_URL =
   'https://raw.githubusercontent.com/du5/gfwlist/master/Rules/gfw.pac';
 
@@ -20,3 +21,5 @@ export const QUERY_COUNTRY = 'queryCountry';
 export const ANSWER_COUNTRY = 'answerCountry';
 
 export const SYNC_STORE = 'syncStore';
+
+export const SYNC_THEME = 'syncTheme';

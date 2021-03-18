@@ -31,13 +31,15 @@ class WinProxy {
     const HTTPPort = store.HTTPPort.toString();
     const PACPort = store.PACPort.toString();
     const PACURL = store.PACURL;
+    const userRules = store.userRules;
     return {
       proxyMode,
       address,
       socksPort,
       HTTPPort,
       PACPort,
-      PACURL
+      PACURL,
+      userRules
     };
   }
 
@@ -77,18 +79,39 @@ class WinProxy {
   }
 
   private async generatePAC() {
-    const { address, socksPort, HTTPPort, PACPort } = this.getConfig();
+    const {
+      address,
+      socksPort,
+      HTTPPort,
+      PACPort,
+      userRules
+    } = this.getConfig();
     const option = {
       port: Number(PACPort),
       host: address
     };
 
     const template = await fs.readFile(
-      path.resolve(this.proxyPath, '../gfwlist.template.js'),
+      path.resolve(this.proxyPath, '../gfwlist.js.template'),
       'utf8'
     );
+    const rules = userRules.split('\n').map(rule => rule.trim());
+    const proxyRules: Dictionary<number> = {};
+    const directRules: Dictionary<number> = {};
+    rules.forEach(rule => {
+      if (rule.startsWith('||')) {
+        const host = rule.substring(2);
+        proxyRules[host] = 1;
+      }
+      if (rule.startsWith('@@')) {
+        const host = rule.substring(2);
+        directRules[host] = 1;
+      }
+    });
     const context: Dictionary<string> = {
-      proxy: `SOCKS5 ${address}:${socksPort}; PROXY ${address}:${HTTPPort};`
+      proxy: `SOCKS5 ${address}:${socksPort}; PROXY ${address}:${HTTPPort};`,
+      proxyRules: JSON.stringify(proxyRules),
+      directRules: JSON.stringify(directRules)
     };
     const conf = template.replace(/({{\s*(.*?)\s*}})/gm, (match, p1, p2) => {
       return context[p2];

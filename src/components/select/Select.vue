@@ -214,7 +214,7 @@ export default class Select extends Mixins(PopperMixin) {
     width: 16px;
     height: 16px;
     color: var(--color-tertiary);
-    background-color: var(--color-white);
+    background-color: var(--color-bg);
     transition: transform 0.3s ease-in-out;
 
     &.disabled {
@@ -244,7 +244,7 @@ export default class Select extends Mixins(PopperMixin) {
   width: 224px;
   border-radius: 4px;
   box-shadow: 0 2px 4px 0 var(--color-border);
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
   overflow: auto;
 }
 </style>

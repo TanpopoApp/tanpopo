@@ -218,7 +218,7 @@ export default class Input extends Vue {
     width: 16px;
     height: 16px;
     color: var(--color-tertiary);
-    background-color: var(--color-white);
+    background-color: var(--color-bg);
   }
 
   .disabled {
@@ -274,6 +274,7 @@ export default class Input extends Vue {
     padding: 5px 8px;
     line-height: 20px;
     border: 1px solid var(--color-border);
+    color: var(--color-main);
 
     &:read-only {
       user-select: none;

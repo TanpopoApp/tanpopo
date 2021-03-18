@@ -71,7 +71,7 @@ export default class Subscriptions extends Vue {
   display: flex;
   justify-content: center;
   flex: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 }
 .list {
   display: flex;

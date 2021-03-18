@@ -41,7 +41,7 @@ export default class Sidebar extends Vue {}
 .sidebar {
   width: 200px;
   flex: none;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
   border-right: 1px solid var(--color-border);
 }
 .logo {

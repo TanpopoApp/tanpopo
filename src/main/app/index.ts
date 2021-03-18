@@ -3,6 +3,7 @@ import trojan from './trojan';
 import tray from './tray';
 import ping from './ping';
 import country from './country';
+import theme from './theme';
 import { appWindow } from './window';
 
 class App {
@@ -11,6 +12,7 @@ class App {
     ping.startPingService();
     country.startQueryCountryService();
     trojan.init();
+    theme.init();
   }
 
   async stop() {

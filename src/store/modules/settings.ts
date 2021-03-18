@@ -5,7 +5,8 @@ import {
   DEFAULT_ADDRESS,
   DEFAULT_SOCKS_PORT,
   DEFAULT_HTTP_PORT,
-  DEFAULT_PAC_PORT
+  DEFAULT_PAC_PORT,
+  DEFAULT_THEME
 } from '@/utils/const';
 import {
   SAVE_SETTINGS,
@@ -24,7 +25,9 @@ export interface ISettings {
   socksPort: number;
   HTTPPort: number;
   PACPort: number;
+  theme: string;
   PACURL: string;
+  userRules: string;
   openAtLogin: boolean;
   openAsHidden: boolean;
 }
@@ -69,8 +72,15 @@ export default class Settings extends VuexModule implements State {
     return this.settings.PACPort || DEFAULT_PAC_PORT;
   }
 
+  get theme() {
+    return this.settings.theme || DEFAULT_THEME;
+  }
+
   get PACURL() {
     return this.settings.PACURL || '';
+  }
+  get userRules() {
+    return this.settings.userRules || '';
   }
 
   get openAtLogin() {
@@ -108,7 +118,9 @@ export default class Settings extends VuexModule implements State {
       socksPort: DEFAULT_SOCKS_PORT,
       HTTPPort: DEFAULT_HTTP_PORT,
       PACPort: DEFAULT_PAC_PORT,
+      theme: DEFAULT_THEME,
       PACURL: '',
+      userRules: '',
       openAtLogin: false,
       openAsHidden: false
     };
@@ -126,7 +138,9 @@ export default class Settings extends VuexModule implements State {
       socksPort: DEFAULT_SOCKS_PORT,
       HTTPPort: DEFAULT_HTTP_PORT,
       PACPort: DEFAULT_PAC_PORT,
+      theme: DEFAULT_THEME,
       PACURL: '',
+      userRules: '',
       openAtLogin: false,
       openAsHidden: false
     };

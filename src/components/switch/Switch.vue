@@ -47,10 +47,10 @@ export default class TanSwitch extends Vue {
   &:disabled {
     cursor: not-allowed;
     .button {
-      background-color: #f0f0f0;
+      background-color: var(--color-switch-disabled);
 
       &.checked {
-        background-color: #a3d3ff;
+        background-color: var(--color-primary-disabled);
       }
     }
   }
@@ -73,7 +73,7 @@ export default class TanSwitch extends Vue {
       width: 16px;
       height: 16px;
       border-radius: 50%;
-      background-color: var(--color-white);
+      background-color: var(--color-bg);
       transition: left 0.3s ease-in-out;
     }
 
@@ -82,11 +82,6 @@ export default class TanSwitch extends Vue {
 
       &::after {
         left: 22px;
-      }
-
-      &[disabled],
-      &:disabled {
-        background-color: #a3d3ff;
       }
     }
   }

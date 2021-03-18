@@ -6,6 +6,7 @@ export default {
     update: 'Update',
     cancel: 'Cancel',
     delete: 'Delete',
+    save: 'Save',
     colon: ': ',
     timeout: 'Timeout',
     ok: 'OK',
@@ -102,11 +103,25 @@ export default {
         global: 'Global Mode',
         pac: 'PAC Mode'
       },
+      theme: 'Theme',
+      themes: {
+        system: 'System Default',
+        light: 'Light Mode',
+        dark: 'Dark Mode'
+      },
       listeningIPAddress: 'Listening IP Address',
       socksPort: 'SOCKS Port',
       HTTPPort: 'HTTP Port',
       PACPort: 'PAC File Port',
       PACURL: 'PAC URL',
+      userRules: 'User Rules',
+      ruleTips: {
+        title:
+          'Please input host line by line, only default gfwlist enable the rules.',
+        proxyExample: 'Use proxy example: ||google.com',
+        directExample: 'Use direct example: @@baidu.com'
+      },
+      saveRules: 'Please click Save settings to save the rules.',
       autoStartup: 'Auto Startup',
       hiddenWindows: 'Hide window at Startup',
       defaultPACURL: 'Default use gfwlist as pac rule.',
@@ -114,7 +129,7 @@ export default {
       resetSuccess: 'Settings Info reseted.',
       sureToReset: 'Would you like to reset settings?',
       sureToClear: 'Would you like to clear all data?',
-      clearSuccess: 'All data clearede.'
+      clearSuccess: 'All data cleared.'
     },
     about: {
       title: 'About',

@@ -6,7 +6,8 @@ import {
   DEFAULT_SOCKS_PORT,
   DEFAULT_HTTP_PORT,
   DEFAULT_PAC_PORT,
-  SYNC_STORE
+  SYNC_STORE,
+  DEFAULT_THEME
 } from '@/utils/const';
 import { IServer, ISubscription, ISettings } from '@/store/types';
 import { appWindow } from './window';
@@ -91,9 +92,18 @@ class Storage {
     return this.settings.PACPort || DEFAULT_PAC_PORT;
   }
 
+  get theme() {
+    return this.settings.theme || DEFAULT_THEME;
+  }
+
   get PACURL() {
     this.getStore();
     return this.settings.PACURL || '';
+  }
+
+  get userRules() {
+    this.getStore();
+    return this.settings.userRules || '';
   }
 
   get openAtLogin() {

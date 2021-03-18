@@ -95,7 +95,7 @@ export default class Servers extends Vue {
   display: flex;
   flex-direction: column;
   flex: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 }
 .empty {
   margin: auto;

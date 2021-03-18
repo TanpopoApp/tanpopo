@@ -69,7 +69,7 @@ export default class Button extends Vue {
 
 @define-mixin main-button {
   @mixin button;
-  color: var(--color-white);
+  color: var(--color-bg);
   background-image: linear-gradient(to bottom, #40a9ff, #1890ff 98%);
 
   &:hover {
@@ -82,7 +82,7 @@ export default class Button extends Vue {
   position: relative;
   color: var(--color-secondary);
   border: solid 1px var(--color-border);
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 
   &:hover {
     &::after {

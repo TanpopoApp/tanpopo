@@ -2,7 +2,7 @@
 
 A cross-platform desktop app built with Electron.
 
-## FQA
+## FAQ
 
 ### trojan exited with code 3221225781 on Windows
 
