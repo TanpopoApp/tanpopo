@@ -26,6 +26,6 @@ export default class Layout extends Vue {}
 .container {
   width: 100%;
   padding: 16px;
-  background-color: var(--color-bg);
+  background-color: var(--color-body-bg);
 }
 </style>

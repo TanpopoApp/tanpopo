@@ -50,7 +50,7 @@ export default class About extends Vue {
   justify-content: center;
   padding: 16px;
   flex: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 }
 .bodyInner {
   width: 340px;

@@ -76,7 +76,7 @@ export default class Logs extends Vue {
   position: relative;
   padding: 16px;
   flex: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 }
 
 .textarea {

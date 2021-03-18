@@ -102,7 +102,7 @@ export default class Dashboard extends Vue {
 }
 .body {
   flex: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 }
 
 .inner {

@@ -2112,7 +2112,9 @@ const cnips = [
   [3758030848, 4294901760, 17]
 ];
 
-const directDomains = {};
+const directDomains = {{ directRules }};
+
+const proxyDomains = {{ proxyRules }};
 
 const domainsUsingProxy = {
   '030buy.com': 1,
@@ -7427,13 +7429,18 @@ function FindProxyForURL(url, host) {
   }
 
   if (!ipRegExp.test(host)) {
-    if (testDomain(host, domainsUsingProxy)) {
+    if (testDomain(host, proxyDomains)) {
       return proxy;
     }
 
     if (testDomain(host, directDomains, true)) {
       return direct;
     }
+
+    if (testDomain(host, domainsUsingProxy)) {
+      return proxy;
+    }
+
     strIp = dnsResolve(host);
   } else {
     strIp = host;

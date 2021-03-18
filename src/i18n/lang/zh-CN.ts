@@ -6,6 +6,7 @@ export default {
     update: '更新',
     cancel: '取消',
     delete: '删除',
+    save: '保存',
     colon: '：',
     timeout: '超时',
     ok: '确定',
@@ -100,11 +101,24 @@ export default {
         global: '全局模式',
         pac: 'PAC模式'
       },
+      theme: '主题',
+      themes: {
+        system: '系统默认',
+        light: '浅色主题',
+        dark: '深色主题'
+      },
       listeningIPAddress: '监听IP地址',
       socksPort: 'SOCKS端口',
       HTTPPort: 'HTTP端口',
       PACPort: 'PAC文件端口',
       PACURL: 'PAC 地址',
+      userRules: '自定义规则',
+      ruleTips: {
+        title: '请一行一行的输入主机名，仅在默认的gfwlist列表下启用本规则。',
+        proxyExample: '使用代理的例子： ||google.com',
+        directExample: '直接连接的例子： @@baidu.com'
+      },
+      saveRules: '请点击保存设置按钮来保存自定义规则。',
       autoStartup: '开机自启',
       hiddenWindows: '开启时隐藏窗口',
       defaultPACURL: '默认使用gfwlist作为PAC规则。',

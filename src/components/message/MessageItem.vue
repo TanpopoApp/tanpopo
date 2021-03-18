@@ -41,7 +41,7 @@ export default class MessageItem extends Vue {
   padding: 12px 16px;
   border-radius: 4px;
   box-shadow: 0 2px 10px 0 var(--color-border);
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
   transition: all 0.3s ease-in-out;
 
   .icon {

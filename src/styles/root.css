@@ -1,7 +1,6 @@
 :root {
-  --color-white: #fff;
-  --color-black: #000;
-  --color-bg: #f0f1f2;
+  --color-bg: #fff;
+  --color-body-bg: #f0f1f2;
   --color-border: rgba(0, 0, 0, 0.15);
   --color-disabled: rgba(0, 0, 0, 0.25);
   --color-hover: rgba(0, 0, 0, 0.04);
@@ -9,6 +8,22 @@
   --color-secondary: rgba(0, 0, 0, 0.65);
   --color-tertiary: rgba(0, 0, 0, 0.45);
   --color-primary: #1890ff;
+  --color-primary-disabled: rgba(24, 144, 255, 0.4);
+  --color-switch-disabled: rgba(0, 0, 0, 0.06);
   --color-success: #52c41a;
   --color-danger: #f5222d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-body-bg: #1f1f1f;
+    --color-border: rgba(255, 255, 255, 0.15);
+    --color-disabled: rgba(255, 255, 255, 0.25);
+    --color-hover: rgba(255, 255, 255, 0.04);
+    --color-main: rgba(255, 255, 255, 0.85);
+    --color-secondary: rgba(255, 255, 255, 0.65);
+    --color-tertiary: rgba(255, 255, 255, 0.45);
+    --color-switch-disabled: rgba(255, 255, 255, 0.06);
+  }
 }

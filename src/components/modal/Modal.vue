@@ -128,7 +128,7 @@ export default class Modal extends Vue {
     display: flex;
     flex-direction: column;
     border-radius: 8px;
-    background-color: var(--color-white);
+    background-color: var(--color-bg);
   }
 
   &Body {

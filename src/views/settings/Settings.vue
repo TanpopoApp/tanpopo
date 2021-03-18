@@ -73,6 +73,21 @@
               <TanInput v-model.number="form.PACPort"></TanInput>
             </FormItem>
             <FormItem
+              :label="$t('views.settings.theme')"
+              :className="$style.formItem"
+              prop="theme"
+            >
+              <Select v-model="form.theme" :popperClass="$style.popper">
+                <Option
+                  v-for="theme in themes"
+                  :value="theme.value"
+                  :key="theme.value"
+                  :label="theme.label"
+                >
+                </Option>
+              </Select>
+            </FormItem>
+            <FormItem
               :label="$t('views.settings.PACURL')"
               :className="$style.formURL"
               prop="PACURL"
@@ -80,7 +95,17 @@
               <TanInput
                 v-model="form.PACURL"
                 :placeholder="$t('views.settings.defaultPACURL')"
-              ></TanInput>
+              >
+              </TanInput>
+            </FormItem>
+            <FormItem :className="$style.formRule" prop="PACRule">
+              <Button
+                mode="normal"
+                :className="$style.ruleButton"
+                @click="openUserRulesModal"
+              >
+                {{ $t('views.settings.userRules') }}
+              </Button>
             </FormItem>
             <div :class="$style.option">
               <TanSwitch v-model="form.openAtLogin">
@@ -116,6 +141,11 @@
               {{ $t('views.settings.sureToClear') }}
             </p>
           </Modal>
+          <UserRules
+            v-model="showUserRules"
+            :userRules="form.userRules"
+            @submit="saveUserRules"
+          />
         </div>
       </div>
     </div>
@@ -131,21 +161,28 @@ import Store from 'electron-store';
 import { isLinux } from '@/utils/platform';
 import {
   START_TROJAN,
+  SYNC_THEME,
   DEFAULT_LANG,
   DEFAULT_PROXY_MODE,
   DEFAULT_ADDRESS,
   DEFAULT_SOCKS_PORT,
   DEFAULT_HTTP_PORT,
-  DEFAULT_PAC_PORT
+  DEFAULT_PAC_PORT,
+  DEFAULT_THEME
 } from '@/utils/const';
 import { ISettings } from '@/store/types';
 import { SAVE_SETTINGS, RESET_SETTINGS } from '@/store';
+import UserRules from './components/UserRules.vue';
 
 const store = new Store();
 const { app } = remote;
 const SettingsStore = namespace('settings');
 
-@Component
+@Component({
+  components: {
+    UserRules
+  }
+})
 export default class Settings extends Vue {
   @SettingsStore.Getter('language') language!: string;
   @SettingsStore.Getter('enableProxy') enableProxy!: boolean;
@@ -154,7 +191,9 @@ export default class Settings extends Vue {
   @SettingsStore.Getter('socksPort') socksPort!: number;
   @SettingsStore.Getter('HTTPPort') HTTPPort!: number;
   @SettingsStore.Getter('PACPort') PACPort!: number;
+  @SettingsStore.Getter('theme') theme!: string;
   @SettingsStore.Getter('PACURL') PACURL!: string;
+  @SettingsStore.Getter('userRules') userRules!: string;
   @SettingsStore.Getter('openAtLogin') openAtLogin!: boolean;
   @SettingsStore.Getter('openAsHidden') openAsHidden!: boolean;
   @SettingsStore.Mutation(SAVE_SETTINGS) mutationSaveSettings!: (
@@ -175,6 +214,7 @@ export default class Settings extends Vue {
 
   confirmReset = false;
   confirmClear = false;
+  showUserRules = false;
 
   validateResult: Dictionary<boolean> = {
     language: true,
@@ -196,7 +236,9 @@ export default class Settings extends Vue {
     socksPort: DEFAULT_SOCKS_PORT,
     HTTPPort: DEFAULT_HTTP_PORT,
     PACPort: DEFAULT_PAC_PORT,
+    theme: DEFAULT_THEME,
     PACURL: '',
+    userRules: '',
     openAtLogin: false,
     openAsHidden: false
   };
@@ -256,6 +298,23 @@ export default class Settings extends Vue {
     ];
   }
 
+  get themes() {
+    return [
+      {
+        value: 'system',
+        label: this.$i18n.t('views.settings.themes.system')
+      },
+      {
+        value: 'light',
+        label: this.$i18n.t('views.settings.themes.light')
+      },
+      {
+        value: 'dark',
+        label: this.$i18n.t('views.settings.themes.dark')
+      }
+    ];
+  }
+
   created() {
     this.syncForm();
   }
@@ -274,7 +333,9 @@ export default class Settings extends Vue {
       socksPort: this.socksPort,
       HTTPPort: this.HTTPPort,
       PACPort: this.PACPort,
+      theme: this.theme,
       PACURL: this.PACURL,
+      userRules: this.userRules,
       openAtLogin: this.openAtLogin,
       openAsHidden: this.openAsHidden
     };
@@ -292,6 +353,10 @@ export default class Settings extends Vue {
     this.confirmClear = true;
   }
 
+  openUserRulesModal() {
+    this.showUserRules = true;
+  }
+
   clearAll() {
     store.clear();
     message.success(this.$i18n.t('views.settings.clearSuccess') as string);
@@ -304,6 +369,10 @@ export default class Settings extends Vue {
     this.mutationResetSettings();
     message.success(this.$i18n.t('views.settings.resetSuccess') as string);
     this.syncSettings();
+  }
+
+  saveUserRules(userRules: string) {
+    this.form.userRules = userRules;
   }
 
   saveSettings() {
@@ -329,6 +398,7 @@ export default class Settings extends Vue {
       });
     }
 
+    ipcRenderer.send(SYNC_THEME, this.theme);
     this.$i18n.locale = this.language;
     this.syncForm();
   }
@@ -353,7 +423,7 @@ export default class Settings extends Vue {
   position: relative;
   padding: 16px;
   flex: 1;
-  background-color: var(--color-white);
+  background-color: var(--color-bg);
 }
 
 .inner {
@@ -383,8 +453,18 @@ export default class Settings extends Vue {
   }
 
   &URL {
-    width: 100%;
+    width: 80%;
   }
+
+  &Rule {
+    width: 15%;
+    display: flex;
+    align-items: flex-end;
+  }
+}
+
+.ruleButton {
+  height: 40px;
 }
 
 .popper {
