@@ -1,6 +1,14 @@
 export const START_TROJAN = 'startTrojan';
 export const STOP_TROJAN = 'stopTrojan';
 
+export const START_SS = 'startShadowsocks';
+export const STOP_SS = 'stopShadowsocks';
+
+export const STOP_ALL = 'stopAll';
+
+export const TYPE_TROJAN = 'trojan';
+export const TYPE_SS = 'ss';
+
 export const DEFAULT_LANG = 'en';
 export const DEFAULT_PROXY_MODE = 'local';
 export const DEFAULT_ADDRESS = '127.0.0.1';

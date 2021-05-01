@@ -31,7 +31,13 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { ipcRenderer } from 'electron';
 import { IServer } from '@/store/modules/server';
-import { START_TROJAN, STOP_TROJAN } from '@/utils/const';
+import {
+  START_TROJAN,
+  STOP_ALL,
+  START_SS,
+  TYPE_TROJAN,
+  TYPE_SS
+} from '@/utils/const';
 import { namespace } from 'vuex-class';
 import { UPDATE_PROXY } from '@/store';
 
@@ -77,10 +83,19 @@ export default class Dashboard extends Vue {
   onEnableChanged() {
     if (this.enableProxy) {
       if (this.hasSelectedServer) {
-        ipcRenderer.send(START_TROJAN);
+        switch (this.selectedServer.type) {
+          case TYPE_TROJAN: {
+            ipcRenderer.send(START_TROJAN);
+            break;
+          }
+          case TYPE_SS: {
+            ipcRenderer.send(START_SS);
+            break;
+          }
+        }
       }
     } else {
-      ipcRenderer.send(STOP_TROJAN);
+      ipcRenderer.send(STOP_ALL);
     }
   }
 }

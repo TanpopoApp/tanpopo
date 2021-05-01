@@ -8,6 +8,17 @@
         @submit="save"
         ref="jsonForm"
       >
+        <FormItem :label="$t('views.servers.type')" prop="type">
+          <Select v-model="form.type" :popperClass="$style.popper">
+            <Option
+              v-for="type in serverType"
+              :value="type.value"
+              :key="type.value"
+              :label="type.label"
+            >
+            </Option>
+          </Select>
+        </FormItem>
         <FormItem :label="$t('views.servers.name')" prop="name">
           <TanInput v-model="form.name"></TanInput>
         </FormItem>
@@ -37,6 +48,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { IAdvancedServer, IServer } from '@/store/modules/server';
 import { Form } from '@/components/form';
 import message from '@/components/message';
+import { TYPE_TROJAN, TYPE_SS } from '@/utils/const';
 import CodeMirror from 'codemirror';
 import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/lib/codemirror.css';
@@ -52,6 +64,7 @@ export default class JSON extends Vue {
 
   form: IAdvancedServer = {
     uuid: '',
+    type: TYPE_TROJAN,
     name: '',
     json: ''
   };
@@ -62,6 +75,19 @@ export default class JSON extends Vue {
     name: false,
     json: true
   };
+
+  get serverType() {
+    return [
+      {
+        value: TYPE_TROJAN,
+        label: this.$i18n.t('views.servers.serverType.trojan')
+      },
+      {
+        value: TYPE_SS,
+        label: this.$i18n.t('views.servers.serverType.shadowsocks')
+      }
+    ];
+  }
 
   get editMode() {
     return !!this.server.uuid;
@@ -80,19 +106,34 @@ export default class JSON extends Vue {
     const validateJSON = (rule: object, value: string, callback: Function) => {
       try {
         const config = window.JSON.parse(this.form.json);
-        if (
-          config.run_type &&
-          config.local_addr &&
-          typeof config.local_port === 'number' &&
-          config.remote_addr &&
-          typeof config.remote_port === 'number' &&
-          Array.isArray(config.password)
-        ) {
-          callback();
+        if (this.form.type === TYPE_TROJAN) {
+          if (
+            config.run_type &&
+            config.local_addr &&
+            typeof config.local_port === 'number' &&
+            config.remote_addr &&
+            typeof config.remote_port === 'number' &&
+            Array.isArray(config.password)
+          ) {
+            callback();
+          } else {
+            callback(new Error(this.$i18n.t('validation.type') as string));
+          }
+        } else if (this.form.type === TYPE_SS) {
+          if (
+            config.server &&
+            config.local_port &&
+            typeof config.local_port === 'number' &&
+            config.server_port &&
+            typeof config.server_port === 'number'
+          ) {
+            callback();
+          } else {
+            callback(new Error(this.$i18n.t('validation.type') as string));
+          }
         } else {
-          callback(new Error(this.$i18n.t('validation.type') as string));
+          callback();
         }
-        callback();
       } catch (e) {
         callback(new Error(this.$i18n.t('validation.type') as string));
       }
@@ -161,6 +202,10 @@ export default class JSON extends Vue {
   width: 860px;
   display: flex;
   justify-content: center;
+}
+
+.popper {
+  width: 640px;
 }
 
 .form {
