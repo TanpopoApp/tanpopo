@@ -13,9 +13,9 @@ class AppWindow {
     if (this.win === null) {
       this.win = new BrowserWindow({
         width: 1200,
-        height: 880,
+        height: 960,
         minWidth: 1200,
-        minHeight: 880,
+        minHeight: 960,
         skipTaskbar: true,
         webPreferences: {
           // Use pluginOptions.nodeIntegration, leave this alone

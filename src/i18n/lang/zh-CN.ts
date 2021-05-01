@@ -50,10 +50,12 @@ export default {
       emptyServer: '还没有服务器信息，请先添加。',
       sureToDelete: '您确定要删除服务器{name}吗？',
       qrCode: '二维码',
+      type: '服务器类型',
       name: '服务器名称',
       host: '主机名',
       port: '端口号',
       password: '密码',
+      method: '加密方法',
       sni: 'SNI',
       URL: '服务器URL',
       allowUnsafe: '允许不安全',
@@ -63,8 +65,12 @@ export default {
       portNotMatch: 'JSON文件的端口号和程序配置的端口号不一致，请注意！',
       add: {
         manual: '手动添加',
-        URL: '使用Trojan URL添加',
+        URL: '使用URL添加',
         json: '导入JSON'
+      },
+      serverType: {
+        trojan: 'Trojan',
+        shadowsocks: 'Shadowsocks'
       },
       updateSuccess: '服务器信息已更新。',
       addSuccess: '服务器信息已添加。',

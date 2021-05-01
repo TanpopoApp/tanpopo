@@ -51,10 +51,12 @@ export default {
       emptyServer: 'There is no server info yet, please add one.',
       sureToDelete: 'Would you like to delete server {name}?',
       qrCode: 'QR code',
+      type: 'Server Type',
       name: 'Name',
       host: 'Host',
       port: 'Port',
       password: 'Password',
+      method: 'Method',
       sni: 'SNI',
       URL: 'URL',
       allowUnsafe: 'Allow Unsafe',
@@ -65,8 +67,12 @@ export default {
         'JSON config local_port not same with config port, please be careful!',
       add: {
         manual: 'Manual Add',
-        URL: 'Add Trojan URL',
+        URL: 'Add URL',
         json: 'Add JSON'
+      },
+      serverType: {
+        trojan: 'Trojan',
+        shadowsocks: 'Shadowsocks'
       },
       updateSuccess: 'Server Info updated.',
       addSuccess: 'Server Info added.',

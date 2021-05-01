@@ -20,6 +20,7 @@ import QRCodeLib from 'qrcode';
 import { IAdvancedServer, IServer } from '@/store/modules/server';
 import message from '@/components/message';
 import { copyText } from '@/utils/util';
+import { TYPE_TROJAN, TYPE_SS } from '@/utils/const';
 
 @Component
 export default class QRCode extends Vue {
@@ -52,7 +53,17 @@ export default class QRCode extends Vue {
       const serverInfo = this.isJSONServer
         ? window.JSON.parse((this.server as IAdvancedServer).json)
         : this.server;
-      this.url = `trojan://${serverInfo.password}@${serverInfo.host}:${serverInfo.port}#${serverInfo.name}`;
+      switch (serverInfo.type) {
+        case TYPE_TROJAN: {
+          this.url = `trojan://${serverInfo.password}@${serverInfo.host}:${serverInfo.port}#${serverInfo.name}`;
+          break;
+        }
+        case TYPE_SS: {
+          const info = `${serverInfo.method}:${serverInfo.password}@${serverInfo.host}:${serverInfo.port}`;
+          this.url = `ss://${btoa(info)}#${serverInfo.name}`;
+          break;
+        }
+      }
       QRCodeLib.toDataURL(this.url, { width: 320 }).then(dataURL => {
         this.qrcodeURL = dataURL;
       });

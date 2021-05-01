@@ -28,7 +28,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ipcRenderer } from 'electron';
-import { START_TROJAN } from '@/utils/const';
+import { START_TROJAN, START_SS, TYPE_TROJAN, TYPE_SS } from '@/utils/const';
 import { SELECT_SERVER } from '@/store';
 import { IServer } from '@/store/types';
 import AddServer from './components/AddServer.vue';
@@ -64,7 +64,16 @@ export default class Servers extends Vue {
     if (selectedServer) {
       this.mutationSelectServer(selectedServer);
       if (this.enableProxy) {
-        ipcRenderer.send(START_TROJAN);
+        switch (selectedServer.type) {
+          case TYPE_TROJAN: {
+            ipcRenderer.send(START_TROJAN);
+            break;
+          }
+          case TYPE_SS: {
+            ipcRenderer.send(START_SS);
+            break;
+          }
+        }
       }
     }
   }

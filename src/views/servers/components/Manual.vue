@@ -2,6 +2,17 @@
   <div :class="$style.manual">
     <div :class="$style.form">
       <Form :model="form" :rules="rules" @on-validate="validate" @submit="save">
+        <FormItem :label="$t('views.servers.type')" prop="type">
+          <Select v-model="form.type" :popperClass="$style.popper">
+            <Option
+              v-for="type in serverType"
+              :value="type.value"
+              :key="type.value"
+              :label="type.label"
+            >
+            </Option>
+          </Select>
+        </FormItem>
         <FormItem :label="$t('views.servers.name')" prop="name">
           <TanInput v-model="form.name"></TanInput>
         </FormItem>
@@ -15,21 +26,37 @@
           <TanInput v-model="form.password" type="password"></TanInput>
         </FormItem>
         <FormItem
+          :label="`${$t('views.servers.method')}`"
+          prop="method"
+          v-show="isSS"
+        >
+          <Select v-model="form.method" :popperClass="$style.popper">
+            <Option
+              v-for="method in methodType"
+              :value="method.value"
+              :key="method.value"
+              :label="method.label"
+            >
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem
           :label="`${$t('views.servers.sni')}(${$t('common.option')})`"
           prop="sni"
+          v-show="isTrojan"
         >
           <TanInput v-model="form.sni"></TanInput>
         </FormItem>
         <FormItem>
           <div :class="$style.switch">
-            <TanSwitch v-model="form.verify">
-              {{ $t('views.servers.allowUnsafe') }}
-            </TanSwitch>
-            <TanSwitch v-model="form.verifyHostname">
-              {{ $t('views.servers.verifyHostname') }}
-            </TanSwitch>
             <TanSwitch v-model="form.fastOpen">
               {{ $t('views.servers.fastOpen') }}
+            </TanSwitch>
+            <TanSwitch v-model="form.verify" :disabled="isSS">
+              {{ $t('views.servers.allowUnsafe') }}
+            </TanSwitch>
+            <TanSwitch v-model="form.verifyHostname" :disabled="isSS">
+              {{ $t('views.servers.verifyHostname') }}
             </TanSwitch>
           </div>
         </FormItem>
@@ -49,6 +76,8 @@
 import { Vue, Prop, Component } from 'vue-property-decorator';
 import { v4 as uuidv4 } from 'uuid';
 import { IBasicServer, IServer } from '@/store/modules/server';
+import { method } from '@/utils/method';
+import { TYPE_TROJAN, TYPE_SS } from '@/utils/const';
 
 @Component
 export default class Manual extends Vue {
@@ -56,10 +85,12 @@ export default class Manual extends Vue {
 
   form: IBasicServer = {
     uuid: '',
+    type: TYPE_TROJAN,
     name: '',
     host: '',
     port: 443,
     password: '',
+    method: '',
     sni: '',
     verify: true,
     verifyHostname: true,
@@ -77,8 +108,33 @@ export default class Manual extends Vue {
     return !!this.server.uuid;
   }
 
+  get isTrojan() {
+    return this.form.type === TYPE_TROJAN;
+  }
+
+  get isSS() {
+    return this.form.type === TYPE_SS;
+  }
+
   get isValid() {
     return Object.values(this.validateResult).every(result => result);
+  }
+
+  get serverType() {
+    return [
+      {
+        value: TYPE_TROJAN,
+        label: this.$i18n.t('views.servers.serverType.trojan')
+      },
+      {
+        value: TYPE_SS,
+        label: this.$i18n.t('views.servers.serverType.shadowsocks')
+      }
+    ];
+  }
+
+  get methodType() {
+    return method;
   }
 
   get rules() {
@@ -147,6 +203,10 @@ export default class Manual extends Vue {
 }
 
 .form {
+  width: 420px;
+}
+
+.popper {
   width: 420px;
 }
 

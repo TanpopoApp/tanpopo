@@ -2,7 +2,7 @@ import { IServer } from '@/store/modules/server';
 import { parseTrojanURL } from './url';
 import log from 'electron-log';
 
-function b64DecodeUnicode(str: string) {
+export function b64DecodeUnicode(str: string) {
   return decodeURIComponent(
     Array.prototype.map
       .call(atob(str), function(c) {

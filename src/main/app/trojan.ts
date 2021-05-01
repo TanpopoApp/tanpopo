@@ -10,6 +10,7 @@ import {
   DEFAULT_ADDRESS,
   DEFAULT_SOCKS_PORT
 } from '@/utils/const';
+import client from '@/main/app';
 import port from './port';
 import privoxy from './privoxy';
 import proxy from './proxy';
@@ -43,14 +44,11 @@ class Trojan {
   }
 
   async init() {
-    if (store.enableProxy) {
-      this.start();
-    }
-    ipcMain.on(START_TROJAN, () => {
-      this.start();
+    ipcMain.on(START_TROJAN, async () => {
+      await this.start();
     });
-    ipcMain.on(STOP_TROJAN, () => {
-      this.stop();
+    ipcMain.on(STOP_TROJAN, async () => {
+      await this.stop();
     });
   }
 
@@ -92,7 +90,7 @@ class Trojan {
 
   async start() {
     await this.generateConfig();
-    await this.stop();
+    await client.stop();
     const option = {
       port: this.config.local_port as number,
       host: this.config.local_addr as string

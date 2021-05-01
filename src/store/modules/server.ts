@@ -12,10 +12,12 @@ import Store from 'electron-store';
 export type IServer = IBasicServer | IAdvancedServer;
 export interface IBasicServer {
   uuid: string;
+  type: string;
   name: string;
   password: string;
   host: string;
   port: number;
+  method?: string;
   sni?: string;
   verify?: boolean;
   verifyHostname?: boolean;
@@ -24,6 +26,7 @@ export interface IBasicServer {
 
 export interface IAdvancedServer {
   uuid: string;
+  type: string;
   name: string;
   json: string;
 }

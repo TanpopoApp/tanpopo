@@ -22,7 +22,9 @@
 </template>
 <script lang="ts">
 import { Vue, Prop, Component } from 'vue-property-decorator';
-import { parseTrojanURL } from '@/utils/url';
+import { parseTrojanURL, parseSSURL } from '@/utils/url';
+import { IBasicServer } from '@/store/modules/server';
+import { TYPE_TROJAN, TYPE_SS } from '@/utils/const';
 
 @Component
 export default class URL extends Vue {
@@ -54,7 +56,7 @@ export default class URL extends Vue {
       URL: [
         required,
         {
-          pattern: /^trojan:\/\/(.*?)@(.*?):(\d+)(?:#?)(.*)/,
+          pattern: /^(trojan|ss):\/\/(.*)/,
           message: this.$i18n.t('validation.type'),
           trigger: 'blur'
         }
@@ -67,7 +69,13 @@ export default class URL extends Vue {
   }
 
   save() {
-    const serverInfo = parseTrojanURL(this.form.URL);
+    let serverInfo: IBasicServer | null = null;
+    if (this.form.URL.startsWith(TYPE_TROJAN)) {
+      serverInfo = parseTrojanURL(this.form.URL);
+    } else if (this.form.URL.startsWith(TYPE_SS)) {
+      serverInfo = parseSSURL(this.form.URL);
+    }
+
     const form = Object.assign(serverInfo, { name: this.form.name });
     this.$emit('submit', form);
   }
