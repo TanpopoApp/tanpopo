@@ -31,3 +31,9 @@ export const ANSWER_COUNTRY = 'answerCountry';
 export const SYNC_STORE = 'syncStore';
 
 export const SYNC_THEME = 'syncTheme';
+
+export const EXPORT_SETTINGS = 'exportSettings';
+export const EXPORT_SETTINGS_SUCCESS = 'exportSettingsSuccess';
+
+export const IMPORT_SETTINGS = 'importSettings';
+export const IMPORT_SETTINGS_SUCCESS = 'importSettingsSuccess';

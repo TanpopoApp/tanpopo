@@ -47,6 +47,7 @@
             <FormItem
               :label="$t('views.settings.listeningIPAddress')"
               :className="$style.formItem"
+              :disabled="disableOption"
               prop="address"
             >
               <TanInput v-model="form.address"></TanInput>
@@ -54,6 +55,7 @@
             <FormItem
               :label="$t('views.settings.socksPort')"
               :className="$style.formItem"
+              :disabled="disableOption"
               prop="socksPort"
             >
               <TanInput v-model.number="form.socksPort"></TanInput>
@@ -61,6 +63,7 @@
             <FormItem
               :label="$t('views.settings.HTTPPort')"
               :className="$style.formItem"
+              :disabled="disableOption"
               prop="HTTPPort"
             >
               <TanInput v-model.number="form.HTTPPort"></TanInput>
@@ -68,6 +71,7 @@
             <FormItem
               :label="$t('views.settings.PACPort')"
               :className="$style.formItem"
+              :disabled="disableOption"
               prop="PACPort"
             >
               <TanInput v-model.number="form.PACPort"></TanInput>
@@ -90,6 +94,7 @@
             <FormItem
               :label="$t('views.settings.PACURL')"
               :className="$style.formURL"
+              :disabled="disableOption"
               prop="PACURL"
             >
               <TanInput
@@ -98,7 +103,11 @@
               >
               </TanInput>
             </FormItem>
-            <FormItem :className="$style.formRule" prop="PACRule">
+            <FormItem
+              :className="$style.formRule"
+              :disabled="disableOption"
+              prop="PACRule"
+            >
               <Button
                 mode="normal"
                 :className="$style.ruleButton"
@@ -114,20 +123,28 @@
               <TanSwitch v-model="form.openAsHidden" :class="$style.button">
                 {{ $t('views.settings.hiddenWindows') }}
               </TanSwitch>
+
               <Button
-                mode="danger"
+                mode="normal"
                 :class="$style.button"
-                @click="openConfirmClearModal"
+                @click="exportSettings"
               >
-                {{ $t('views.settings.clearAll') }}
+                {{ $t('views.settings.exportSettings') }}
+              </Button>
+              <Button
+                mode="normal"
+                :class="$style.button"
+                @click="importSettings"
+              >
+                {{ $t('views.settings.importSettings') }}
               </Button>
             </div>
             <div :class="$style.footer">
+              <Button mode="danger" @click="openConfirmClearModal">
+                {{ $t('views.settings.clearAll') }}
+              </Button>
               <Button mode="normal" @click="openConfirmResetModal">
                 {{ $t('views.settings.resetSettings') }}
-              </Button>
-              <Button type="submit" :disabled="!isValid">
-                {{ $t('views.settings.saveSettings') }}
               </Button>
             </div>
           </Form>
@@ -160,7 +177,6 @@ import message from '@/components/message';
 import Store from 'electron-store';
 import { isLinux } from '@/utils/platform';
 import {
-  START_TROJAN,
   SYNC_THEME,
   DEFAULT_LANG,
   DEFAULT_PROXY_MODE,
@@ -168,10 +184,28 @@ import {
   DEFAULT_SOCKS_PORT,
   DEFAULT_HTTP_PORT,
   DEFAULT_PAC_PORT,
-  DEFAULT_THEME
+  DEFAULT_THEME,
+  EXPORT_SETTINGS,
+  EXPORT_SETTINGS_SUCCESS,
+  IMPORT_SETTINGS_SUCCESS,
+  IMPORT_SETTINGS
 } from '@/utils/const';
 import { ISettings } from '@/store/types';
-import { SAVE_SETTINGS, RESET_SETTINGS } from '@/store';
+import {
+  SAVE_SETTINGS,
+  RESET_SETTINGS,
+  UPDATE_LANG,
+  UPDATE_PROXY_MODE,
+  UPDATE_ADDRESS,
+  UPDATE_SOCKS_PORT,
+  UPDATE_HTTP_PORT,
+  UPDATE_PAC_PORT,
+  UPDATE_THEME,
+  UPDATE_PAC_URL,
+  UPDATE_USER_RULES,
+  UPDATE_OPEN_AT_LOGIN,
+  UPDATE_OPEN_AS_HIDDEN
+} from '@/store';
 import UserRules from './components/UserRules.vue';
 
 const store = new Store();
@@ -196,6 +230,39 @@ export default class Settings extends Vue {
   @SettingsStore.Getter('userRules') userRules!: string;
   @SettingsStore.Getter('openAtLogin') openAtLogin!: boolean;
   @SettingsStore.Getter('openAsHidden') openAsHidden!: boolean;
+  @SettingsStore.Mutation(UPDATE_LANG) mutationUpdateLang!: (
+    lang: string
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_PROXY_MODE) mutationUpdateProxyMode!: (
+    proxyMode: string
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_ADDRESS) mutationUpdateAddress!: (
+    address: string
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_SOCKS_PORT) mutationUpdateSocksPort!: (
+    socksPort: number
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_HTTP_PORT) mutationUpdateHTTPPort!: (
+    HTTPPort: number
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_PAC_PORT) mutationUpdatePACPort!: (
+    PACPort: number
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_THEME) mutationUpdateTheme!: (
+    theme: string
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_PAC_URL) mutationUpdatePACURL!: (
+    PACURL: string
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_USER_RULES) mutationUpdateUserRules!: (
+    userRules: string
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_OPEN_AT_LOGIN) mutationUpdateOpenAtLogin!: (
+    openAtLogin: boolean
+  ) => void;
+  @SettingsStore.Mutation(UPDATE_OPEN_AS_HIDDEN) mutationUpdateOpenAsHidden!: (
+    openAsHidden: boolean
+  ) => void;
   @SettingsStore.Mutation(SAVE_SETTINGS) mutationSaveSettings!: (
     settings: ISettings
   ) => void;
@@ -278,7 +345,11 @@ export default class Settings extends Vue {
   }
 
   get disableProxyMode() {
-    return isLinux;
+    return isLinux || this.enableProxy;
+  }
+
+  get disableOption() {
+    return this.enableProxy;
   }
 
   get proxyModes() {
@@ -317,6 +388,15 @@ export default class Settings extends Vue {
 
   created() {
     this.syncForm();
+    ipcRenderer.on(EXPORT_SETTINGS_SUCCESS, () => {
+      message.success(this.$i18n.t('views.settings.exportSuccess') as string);
+    });
+    ipcRenderer.on(IMPORT_SETTINGS_SUCCESS, (event, configData: string) => {
+      store.clear();
+      store.set(configData);
+      message.success(this.$i18n.t('views.settings.importSuccess') as string);
+      this.reload();
+    });
   }
 
   @Watch('proxyMode')
@@ -325,19 +405,90 @@ export default class Settings extends Vue {
   }
 
   syncForm() {
+    const self = this;
     this.form = {
-      language: this.language,
+      get language() {
+        return self.language;
+      },
+      set language(lang: string) {
+        self.$i18n.locale = lang;
+        self.mutationUpdateLang(lang);
+      },
       enableProxy: this.enableProxy,
-      proxyMode: this.proxyMode,
-      address: this.address,
-      socksPort: this.socksPort,
-      HTTPPort: this.HTTPPort,
-      PACPort: this.PACPort,
-      theme: this.theme,
-      PACURL: this.PACURL,
-      userRules: this.userRules,
-      openAtLogin: this.openAtLogin,
-      openAsHidden: this.openAsHidden
+      get proxyMode() {
+        return self.proxyMode;
+      },
+      set proxyMode(proxyMode: string) {
+        self.mutationUpdateProxyMode(proxyMode);
+      },
+      get address() {
+        return self.address;
+      },
+      set address(address: string) {
+        self.mutationUpdateAddress(address);
+      },
+      get socksPort() {
+        return self.socksPort;
+      },
+      set socksPort(socksPort: number) {
+        self.mutationUpdateSocksPort(socksPort);
+      },
+      get HTTPPort() {
+        return self.HTTPPort;
+      },
+      set HTTPPort(HTTPPort: number) {
+        self.mutationUpdateHTTPPort(HTTPPort);
+      },
+      get PACPort() {
+        return self.PACPort;
+      },
+      set PACPort(PACPort: number) {
+        self.mutationUpdatePACPort(PACPort);
+      },
+      get theme() {
+        return self.theme;
+      },
+      set theme(theme: string) {
+        ipcRenderer.send(SYNC_THEME, theme);
+        self.mutationUpdateTheme(theme);
+      },
+      get PACURL() {
+        return self.PACURL;
+      },
+      set PACURL(PACURL: string) {
+        self.mutationUpdatePACURL(PACURL);
+      },
+      get userRules() {
+        return self.userRules;
+      },
+      set userRules(userRules: string) {
+        self.mutationUpdateUserRules(userRules);
+      },
+      get openAtLogin() {
+        return self.openAtLogin;
+      },
+      set openAtLogin(openAtLogin: boolean) {
+        app.setLoginItemSettings({
+          openAtLogin
+        });
+        self.mutationUpdateOpenAtLogin(openAtLogin);
+      },
+      get openAsHidden() {
+        return self.openAsHidden;
+      },
+      set openAsHidden(openAsHidden: boolean) {
+        if (openAsHidden) {
+          app.setLoginItemSettings({
+            openAsHidden: true,
+            args: ['--hidden']
+          });
+        } else {
+          app.setLoginItemSettings({
+            openAsHidden: false
+          });
+        }
+        self.mutationUpdateOpenAsHidden(openAsHidden);
+      }
     };
   }
 
@@ -360,15 +511,26 @@ export default class Settings extends Vue {
   clearAll() {
     store.clear();
     message.success(this.$i18n.t('views.settings.clearSuccess') as string);
+    this.reload();
+  }
+
+  reload() {
     setTimeout(() => {
       location.reload();
     }, 3000);
   }
 
+  exportSettings() {
+    ipcRenderer.send(EXPORT_SETTINGS);
+  }
+
+  importSettings() {
+    ipcRenderer.send(IMPORT_SETTINGS);
+  }
+
   resetSettings() {
     this.mutationResetSettings();
     message.success(this.$i18n.t('views.settings.resetSuccess') as string);
-    this.syncSettings();
   }
 
   saveUserRules(userRules: string) {
@@ -378,29 +540,6 @@ export default class Settings extends Vue {
   saveSettings() {
     this.mutationSaveSettings(this.form);
     message.success(this.$i18n.t('views.settings.saveSuccess') as string);
-    this.syncSettings();
-  }
-
-  syncSettings() {
-    if (this.enableProxy) {
-      ipcRenderer.send(START_TROJAN);
-    }
-    if (this.openAsHidden) {
-      app.setLoginItemSettings({
-        openAtLogin: this.openAtLogin,
-        openAsHidden: true,
-        args: ['--hidden']
-      });
-    } else {
-      app.setLoginItemSettings({
-        openAtLogin: this.openAtLogin,
-        openAsHidden: false
-      });
-    }
-
-    ipcRenderer.send(SYNC_THEME, this.theme);
-    this.$i18n.locale = this.language;
-    this.syncForm();
   }
 }
 </script>

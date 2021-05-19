@@ -25,7 +25,6 @@
 </template>
 <script lang="ts">
 import { Vue, Prop, Component, Watch } from 'vue-property-decorator';
-import message from '@/components/message';
 
 @Component
 export default class UserRules extends Vue {
@@ -54,7 +53,6 @@ export default class UserRules extends Vue {
 
   save() {
     this.$emit('submit', this.rules);
-    message.warning(this.$i18n.t('views.settings.saveRules') as string);
   }
 }
 </script>
