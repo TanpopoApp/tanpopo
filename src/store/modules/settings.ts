@@ -13,7 +13,18 @@ import {
   RESET_SETTINGS,
   UPDATE_PROXY,
   SYNC_SETTINGS,
-  INIT_SETTINGS
+  INIT_SETTINGS,
+  UPDATE_LANG,
+  UPDATE_PROXY_MODE,
+  UPDATE_ADDRESS,
+  UPDATE_SOCKS_PORT,
+  UPDATE_HTTP_PORT,
+  UPDATE_PAC_PORT,
+  UPDATE_THEME,
+  UPDATE_PAC_URL,
+  UPDATE_USER_RULES,
+  UPDATE_OPEN_AT_LOGIN,
+  UPDATE_OPEN_AS_HIDDEN
 } from '../mutations.type';
 import Store from 'electron-store';
 
@@ -92,9 +103,75 @@ export default class Settings extends VuexModule implements State {
   }
 
   @Mutation
+  [UPDATE_LANG](lang: string) {
+    this.settings.language = lang;
+    store.set('settings.language', lang);
+  }
+
+  @Mutation
   [UPDATE_PROXY](val: boolean) {
     this.settings.enableProxy = val;
-    store.set('settings', this.settings);
+    store.set('settings.enableProxy', val);
+  }
+
+  @Mutation
+  [UPDATE_PROXY_MODE](val: string) {
+    this.settings.proxyMode = val;
+    store.set('settings.proxyMode', val);
+  }
+
+  @Mutation
+  [UPDATE_ADDRESS](val: string) {
+    this.settings.address = val;
+    store.set('settings.address', val);
+  }
+
+  @Mutation
+  [UPDATE_SOCKS_PORT](socksPort: number) {
+    this.settings.socksPort = socksPort;
+    store.set('settings.socksPort', socksPort);
+  }
+
+  @Mutation
+  [UPDATE_HTTP_PORT](HTTPPort: number) {
+    this.settings.HTTPPort = HTTPPort;
+    store.set('settings.HTTPPort', HTTPPort);
+  }
+
+  @Mutation
+  [UPDATE_PAC_PORT](PACPort: number) {
+    this.settings.PACPort = PACPort;
+    store.set('settings.PACPort', PACPort);
+  }
+
+  @Mutation
+  [UPDATE_THEME](theme: string) {
+    this.settings.theme = theme;
+    store.set('settings.theme', theme);
+  }
+
+  @Mutation
+  [UPDATE_PAC_URL](PACURL: string) {
+    this.settings.PACURL = PACURL;
+    store.set('settings.PACURL', PACURL);
+  }
+
+  @Mutation
+  [UPDATE_USER_RULES](userRules: string) {
+    this.settings.userRules = userRules;
+    store.set('settings.userRules', userRules);
+  }
+
+  @Mutation
+  [UPDATE_OPEN_AT_LOGIN](openAtLogin: boolean) {
+    this.settings.openAtLogin = openAtLogin;
+    store.set('settings.openAtLogin', openAtLogin);
+  }
+
+  @Mutation
+  [UPDATE_OPEN_AS_HIDDEN](openAsHidden: boolean) {
+    this.settings.openAsHidden = openAsHidden;
+    store.set('settings.openAsHidden', openAsHidden);
   }
 
   @Mutation

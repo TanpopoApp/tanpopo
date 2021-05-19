@@ -8,6 +8,7 @@ import country from './country';
 import theme from './theme';
 import store from './store';
 import migration from './migration';
+import dialog from './dialog';
 import { appWindow } from './window';
 
 class App {
@@ -19,6 +20,7 @@ class App {
     trojan.init();
     shadowsocks.init();
     theme.init();
+    dialog.init();
 
     if (store.enableProxy) {
       const selectedServer = store.selectedServer;

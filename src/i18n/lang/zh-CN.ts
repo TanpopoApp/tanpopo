@@ -97,6 +97,8 @@ export default {
     settings: {
       title: '设置',
       clearAll: '清空所有数据',
+      exportSettings: '导出设置',
+      importSettings: '导入设置',
       resetSettings: '重置设置',
       saveSettings: '保存设置',
       saved: '设置已保存',
@@ -128,6 +130,8 @@ export default {
       autoStartup: '开机自启',
       hiddenWindows: '开启时隐藏窗口',
       defaultPACURL: '默认使用gfwlist作为PAC规则。',
+      exportSuccess: '设置已导出。',
+      importSuccess: '设置已导入。',
       saveSuccess: '设置已保存。',
       resetSuccess: '设置已重置。',
       sureToReset: '您确定要重置设置么？',

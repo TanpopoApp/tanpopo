@@ -99,6 +99,8 @@ export default {
     settings: {
       title: 'Settings',
       clearAll: 'Clear All Data',
+      exportSettings: 'Export Settings',
+      importSettings: 'Import Settings',
       resetSettings: 'Reset Settings',
       saveSettings: 'Save Settings',
       saved: 'Settings saved',
@@ -131,6 +133,8 @@ export default {
       autoStartup: 'Auto Startup',
       hiddenWindows: 'Hide window at Startup',
       defaultPACURL: 'Default use gfwlist as pac rule.',
+      exportSuccess: 'Settings Info exported.',
+      importSuccess: 'Settings Info imported.',
       saveSuccess: 'Settings Info saved.',
       resetSuccess: 'Settings Info reseted.',
       sureToReset: 'Would you like to reset settings?',

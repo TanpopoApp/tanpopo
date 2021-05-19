@@ -15,8 +15,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Inject } from 'vue-property-decorator';
 import { RawLocation } from 'vue-router';
+import { FormItem } from '@/components/form';
 
 type ButtonMode = 'primary' | 'normal' | 'danger';
 
@@ -28,6 +29,7 @@ export default class Button extends Vue {
   @Prop({ default: false, type: Boolean }) readonly loading!: boolean;
   @Prop({ default: '' }) readonly className!: string;
   @Prop() readonly to!: RawLocation;
+  @Inject({ default: null }) readonly formItem!: FormItem | null;
 
   get isLink() {
     return !!this.to;
@@ -55,7 +57,11 @@ export default class Button extends Vue {
   }
 
   get disabledState() {
-    return this.disabledButton;
+    if (this.formItem) {
+      return this.formItem.disabledItem || this.disabledButton;
+    } else {
+      return this.disabledButton;
+    }
   }
 }
 </script>
